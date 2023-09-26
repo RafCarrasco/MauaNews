@@ -1,2 +1,2 @@
 # MauaNews
-Repositório dedicado a apresentação do Projeto Integrador do terceiro semestre do Instituto Mauá de Tecnologia. 
+Repositório dedicado a apresentação do Projeto Integrador do quarto semestre do Instituto Mauá de Tecnologia. 
