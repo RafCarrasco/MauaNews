@@ -1,5 +1,5 @@
 # MauaNews
-Repositório dedicado a apresentação do Projeto Integrador do quarto semestre do Instituto Mauá de Tecnologia. O projeto tem como base a criação de uma rede social voltada para a instituição de ensino 
+Este é um repositório dedicado à apresentação do Projeto Integrador do quarto semestre do Instituto Mauá de Tecnologia. Nosso projeto tem como principal objetivo a criação de uma rede social voltada especificamente para a nossa instituição de ensino.
 
 <div align='center'>
   <h2>Tecnologias Usadas</h2>
