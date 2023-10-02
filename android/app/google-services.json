@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "40028629531",
+    "project_id": "mauanews-d80ea",
+    "storage_bucket": "mauanews-d80ea.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:40028629531:android:17688784c73499792626be",
+        "android_client_info": {
+          "package_name": "com.example.mauanews"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHC0TMILWG5s5QlfqNJKdgBNw6_YeqkZI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
