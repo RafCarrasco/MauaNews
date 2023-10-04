@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:mauanews/components/button_login.dart';
 import 'package:mauanews/components/imagens_login.dart';
 import 'package:mauanews/components/text_field_login.dart';
-import 'package:mauanews/screens/feed.dart';
-import 'package:mauanews/screens/signUp.dart';
 import 'package:mauanews/utils/colors.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+class FeedPage extends StatelessWidget {
+  FeedPage({super.key});
   
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
@@ -43,31 +41,25 @@ class LoginPage extends StatelessWidget {
 
                     const SizedBox(height: 25),
 
-                    EmailTextField(
-                      controller: usernameController,
-                      hintText: "Email:",
-                      obscureText: false,
-                    ),
+                    // MyTextField(
+                    //   controller: usernameController,
+                    //   hintText: "Email:",
+                    //   obscureText: false,
+                    // ),
+
+                    // const SizedBox(height: 25),
+
+                    // MyTextField(
+                    //   controller: passwordController,
+                    //   hintText: "Senha",
+                    //   obscureText: true,
+                    // ),
 
                     const SizedBox(height: 25),
 
-                    SenhaTextField(
-                      controller: passwordController,
-                      hintText: "Senha",
-                      obscureText: true,
-                    ),
-
-                    const SizedBox(height: 25),
-
-                    ButtonLogin(
-                      onTap: (){
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => FeedPage()),
-                        );
-                          
-                      },
-                    ),
+                    // ButtonLogin(
+                    //   onTap: login,
+                    // ),
 
                     const SizedBox(height: 25),
 
@@ -118,11 +110,11 @@ class LoginPage extends StatelessWidget {
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          ImagensLogin(imagePath: "assets/images/google.png"),
+                          ImagensLogin(imagePath: "/images/google.png"),
 
-                          SizedBox(width: 30),
+                          SizedBox(width: 35),
 
-                          ImagensLogin(imagePath: "assets/images/github.png"),
+                          ImagensLogin(imagePath: "/images/facebook_logo.png"),
                         ],
                     ),
 
@@ -147,10 +139,7 @@ class LoginPage extends StatelessWidget {
                             ),
                           ),
                             onPressed: (){
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => SignUp()),
-                              );
+                              print("oi");
                             },
                         ),
                       ],

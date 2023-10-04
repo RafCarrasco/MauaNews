@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:mauanews/components/button_login.dart';
 import 'package:mauanews/components/imagens_login.dart';
 import 'package:mauanews/components/text_field_login.dart';
-import 'package:mauanews/screens/feed.dart';
-import 'package:mauanews/screens/signUp.dart';
 import 'package:mauanews/utils/colors.dart';
+import 'feed.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+class SignUp extends StatelessWidget {
+  SignUp({super.key});
   
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
+  final confirmpasswordController = TextEditingController();
 
   void login(){}
 
@@ -43,9 +43,17 @@ class LoginPage extends StatelessWidget {
 
                     const SizedBox(height: 25),
 
+                    UserTextField(
+                      controller: usernameController,
+                      hintText: "Digite o seu nome de usuario",
+                      obscureText: false,
+                    ),
+
+                    const SizedBox(height: 25),
+
                     EmailTextField(
                       controller: usernameController,
-                      hintText: "Email:",
+                      hintText: "Digite seu email",
                       obscureText: false,
                     ),
 
@@ -53,38 +61,30 @@ class LoginPage extends StatelessWidget {
 
                     SenhaTextField(
                       controller: passwordController,
-                      hintText: "Senha",
+                      hintText: "Digite sua senha",
                       obscureText: true,
                     ),
 
                     const SizedBox(height: 25),
 
-                    ButtonLogin(
-                      onTap: (){
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => FeedPage()),
-                        );
-                          
-                      },
+                    ConfirmaSenhaTextField(
+                      controller: confirmpasswordController,
+                      hintText: "Confirme sua senha",
+                      obscureText: true,
                     ),
 
                     const SizedBox(height: 25),
 
-                  TextButton(
-                    child: const Text(
-                      'Esqueceu a senha?',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 81, 81, 81),
-                        decoration: TextDecoration.underline,
-                        ),
-                      ),
-                      onPressed: (){
-                        print("jorge");
+                    ButtonRegister(
+                      onTap: (){
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => FeedPage()),
+                        );
                       },
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 15),
 
                     const Row(
                       children: <Widget>[
@@ -98,7 +98,7 @@ class LoginPage extends StatelessWidget {
                           ),       
 
                           Text(
-                            "  Ou realize login com:  ",
+                            "  Ou registre-se com:  ",
                             style: TextStyle(color: corSecundaria),
                             ),        
 
@@ -113,7 +113,7 @@ class LoginPage extends StatelessWidget {
                       ]
                     ),
 
-                    const SizedBox(height: 25),
+                    const SizedBox(height: 15),
 
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -123,36 +123,6 @@ class LoginPage extends StatelessWidget {
                           SizedBox(width: 30),
 
                           ImagensLogin(imagePath: "assets/images/github.png"),
-                        ],
-                    ),
-
-                    const SizedBox(height: 25),
-
-                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Não possui uma conta? ",
-                          style: TextStyle(
-                            color: corSecundaria,
-                          ),
-                        ),
-                        TextButton(
-                          child: const Text(
-                            "Registre-se",
-                            style: TextStyle(
-                              color: linkText, 
-                              fontWeight: FontWeight.bold,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                            onPressed: (){
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => SignUp()),
-                              );
-                            },
-                        ),
                       ],
                     ),
                   ],

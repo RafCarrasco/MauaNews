@@ -1,8 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:mauanews/responsive/mobile_screen_layout.dart';
-import 'package:mauanews/responsive/responsivo.dart';
-import 'package:mauanews/responsive/web_screen_layout.dart';
+import 'package:mauanews/screens/login.dart';
 import 'package:mauanews/utils/colors.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -33,12 +31,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'MauaNews',
       theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: fundoMobile,
+        scaffoldBackgroundColor: backgroundApp,
       ),
-      home: const Responsivo(
-        mobileScreenLayout: MobileScreenLayout(),
-        webScreenLayout: WebScreenLayout(),
-      ),
+      // home: const Responsivo(
+      //   mobileScreenLayout: MobileScreenLayout(),
+      //   webScreenLayout: WebScreenLayout(),
+      // ),
+        home: LoginPage(),
       );
   }
 }

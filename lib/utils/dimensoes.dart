@@ -1,4 +1,4 @@
 import 'package:flutter/material.dart';
 
 const webScreenSize = 600;
-const mobileScreenLayout = 770;
+const mobileScreenLayout = 800;
