@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mauanews/components/button_login.dart';
+import 'package:mauanews/components/button_widget.dart';
 import 'package:mauanews/components/imagens_login.dart';
-import 'package:mauanews/components/text_field_login.dart';
+import 'package:mauanews/components/text_field.dart';
 import 'package:mauanews/utils/colors.dart';
 
 class FeedPage extends StatelessWidget {

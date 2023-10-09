@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:mauanews/components/button_login.dart';
+import 'package:mauanews/components/button_widget.dart';
 import 'package:mauanews/components/imagens_login.dart';
-import 'package:mauanews/components/text_field_login.dart';
+import 'package:mauanews/components/text_field.dart';
 import 'package:mauanews/screens/feed.dart';
-import 'package:mauanews/screens/signUp.dart';
+import 'package:mauanews/screens/recover_password.dart';
+import 'package:mauanews/screens/sign_up.dart';
 import 'package:mauanews/utils/colors.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
   
-  final usernameController = TextEditingController();
+  final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
   void login(){}
@@ -43,23 +44,26 @@ class LoginPage extends StatelessWidget {
 
                     const SizedBox(height: 25),
 
-                    EmailTextField(
-                      controller: usernameController,
-                      hintText: "Email:",
+                    MyTextField(
+                      controller: emailController,
+                      hintText: "Digite seu email",
                       obscureText: false,
+                      icon: const Icon(Icons.email_outlined, size: 20, color: Colors.grey,),
                     ),
 
                     const SizedBox(height: 25),
 
-                    SenhaTextField(
+                    MyTextField(
                       controller: passwordController,
-                      hintText: "Senha",
+                      hintText: "Digite sua senha",
                       obscureText: true,
+                      icon: const Icon(Icons.lock_outlined, size: 20, color: Colors.grey,),
                     ),
 
                     const SizedBox(height: 25),
 
-                    ButtonLogin(
+                    ButtonWidget(
+                      text: "Login",
                       onTap: (){
                         Navigator.push(
                           context,
@@ -80,7 +84,10 @@ class LoginPage extends StatelessWidget {
                         ),
                       ),
                       onPressed: (){
-                        print("jorge");
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => RecoverPassword()),
+                        );
                       },
                     ),
 

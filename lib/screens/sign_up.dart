@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mauanews/components/button_login.dart';
+import 'package:mauanews/components/button_widget.dart';
 import 'package:mauanews/components/imagens_login.dart';
-import 'package:mauanews/components/text_field_login.dart';
+import 'package:mauanews/components/text_field.dart';
+import 'package:mauanews/screens/login.dart';
 import 'package:mauanews/utils/colors.dart';
 import 'feed.dart';
 
@@ -9,6 +10,7 @@ class SignUp extends StatelessWidget {
   SignUp({super.key});
   
   final usernameController = TextEditingController();
+  final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmpasswordController = TextEditingController();
 
@@ -43,43 +45,48 @@ class SignUp extends StatelessWidget {
 
                     const SizedBox(height: 25),
 
-                    UserTextField(
+                    MyTextField(
                       controller: usernameController,
                       hintText: "Digite o seu nome de usuario",
                       obscureText: false,
+                      icon: const Icon(Icons.account_circle_rounded, size: 20, color: Colors.grey,),
                     ),
 
                     const SizedBox(height: 25),
 
-                    EmailTextField(
-                      controller: usernameController,
+                    MyTextField(
+                      controller: emailController,
                       hintText: "Digite seu email",
                       obscureText: false,
+                      icon: const Icon(Icons.email_outlined, size: 20, color: Colors.grey,),
                     ),
 
                     const SizedBox(height: 25),
 
-                    SenhaTextField(
+                    MyTextField(
                       controller: passwordController,
                       hintText: "Digite sua senha",
                       obscureText: true,
+                      icon: const Icon(Icons.lock_outlined, size: 20, color: Colors.grey,),
                     ),
 
                     const SizedBox(height: 25),
 
-                    ConfirmaSenhaTextField(
+                    MyTextField(
                       controller: confirmpasswordController,
                       hintText: "Confirme sua senha",
                       obscureText: true,
+                      icon: const Icon(Icons.lock_outlined, size: 20, color: Colors.grey,),
                     ),
 
                     const SizedBox(height: 25),
 
-                    ButtonRegister(
+                    ButtonWidget(
+                      text: "Criar Conta",
                       onTap: (){
                       Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => FeedPage()),
+                          MaterialPageRoute(builder: (context) => LoginPage()),
                         );
                       },
                     ),
