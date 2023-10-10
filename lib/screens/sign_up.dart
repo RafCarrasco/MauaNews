@@ -4,7 +4,6 @@ import 'package:mauanews/components/imagens_login.dart';
 import 'package:mauanews/components/text_field.dart';
 import 'package:mauanews/screens/login.dart';
 import 'package:mauanews/utils/colors.dart';
-import 'feed.dart';
 
 class SignUp extends StatelessWidget {
   SignUp({super.key});
@@ -25,20 +24,18 @@ class SignUp extends StatelessWidget {
             children: [
               Column(
                 children: [
-                  const SizedBox(height: 25),
-
                   Image.asset(
-                    "assets/images/logo.png",
-                    height: 100,
-                    width: 100,
+                    "assets/images/logoteste2.png",
+                    height: 200,
+                    width: 300,
                     ),
 
                   const SizedBox(height: 30),
                   
-                  Text(
+                  const Text(
                     'Seja bem vindo(a) ao MauaNews!',
                     style: TextStyle(
-                      color: Colors.grey[700],
+                      color: textColor,
                       fontSize: 16,
                       ),
                     ),
@@ -100,13 +97,13 @@ class SignUp extends StatelessWidget {
                                 thickness: 0.7,
                                 indent: 25,
                                 endIndent: 1,
-                                color: corSecundaria,
+                                color: secondaryColor,
                               ),
                           ),       
 
                           Text(
                             "  Ou registre-se com:  ",
-                            style: TextStyle(color: corSecundaria),
+                            style: TextStyle(color: textColor),
                             ),        
 
                           Expanded(
@@ -114,7 +111,7 @@ class SignUp extends StatelessWidget {
                                 thickness: 0.7,
                                 indent: 1,
                                 endIndent: 25,
-                                color: corSecundaria,
+                                color: secondaryColor,
                               ),
                           ),
                       ]

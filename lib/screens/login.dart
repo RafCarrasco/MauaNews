@@ -1,19 +1,96 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mauanews/components/button_widget.dart';
 import 'package:mauanews/components/imagens_login.dart';
 import 'package:mauanews/components/text_field.dart';
-import 'package:mauanews/screens/feed.dart';
 import 'package:mauanews/screens/recover_password.dart';
 import 'package:mauanews/screens/sign_up.dart';
 import 'package:mauanews/utils/colors.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
-  
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
-  void login(){}
+  void signUserIn() async{
+
+    showDialog(
+      context: context, 
+      builder: (context) {
+      return const Center(
+        child: CircularProgressIndicator(),
+        );
+      },
+    );
+
+    // try sign in
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+      // pop the loading circle
+      Navigator.pop(context);
+    } on FirebaseAuthException catch (e) {
+      // pop the loading circle
+      Navigator.pop(context);
+      // WRONG EMAIL
+      if (e.code == 'user-not-found') {
+        // show error to user
+        wrongEmailMessage();
+      }
+
+      // WRONG PASSWORD
+      else if (e.code == 'wrong-password') {
+        // show error to user
+        wrongPasswordMessage();
+      }
+    }
+  }
+
+  // wrong email message popup
+  void wrongEmailMessage() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const AlertDialog(
+          backgroundColor: Colors.deepPurple,
+          title: Center(
+            child: Text(
+              'Email incorreto',
+              style: TextStyle(color: secondTextColor),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // wrong password message popup
+  void wrongPasswordMessage() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const AlertDialog(
+          backgroundColor: Colors.deepPurple,
+          title: Center(
+            child: Text(
+              'Senha incorreta',
+              style: TextStyle(color: secondTextColor),
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,20 +101,20 @@ class LoginPage extends StatelessWidget {
             children: [
               Column(
                 children: [
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 0,),
 
                   Image.asset(
-                    "assets/images/logo.png",
-                    height: 100,
-                    width: 100,
+                    "assets/images/logoteste2.png",
+                    height: 200,
+                    width: 300,
                     ),
 
                   const SizedBox(height: 30),
                   
-                  Text(
+                  const Text(
                     'Seja bem vindo(a) ao MauaNews!',
                     style: TextStyle(
-                      color: Colors.grey[700],
+                      color: textColor,
                       fontSize: 16,
                       ),
                     ),
@@ -64,13 +141,7 @@ class LoginPage extends StatelessWidget {
 
                     ButtonWidget(
                       text: "Login",
-                      onTap: (){
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => FeedPage()),
-                        );
-                          
-                      },
+                      onTap: signUserIn,
                     ),
 
                     const SizedBox(height: 25),
@@ -79,7 +150,7 @@ class LoginPage extends StatelessWidget {
                     child: const Text(
                       'Esqueceu a senha?',
                       style: TextStyle(
-                        color: Color.fromARGB(255, 81, 81, 81),
+                        color: textColor,
                         decoration: TextDecoration.underline,
                         ),
                       ),
@@ -100,21 +171,21 @@ class LoginPage extends StatelessWidget {
                                 thickness: 0.7,
                                 indent: 25,
                                 endIndent: 1,
-                                color: corSecundaria,
+                                color: primaryColor,
                               ),
                           ),       
 
                           Text(
                             "  Ou realize login com:  ",
-                            style: TextStyle(color: corSecundaria),
-                            ),        
+                            style: TextStyle(color: textColor),
+                            ),
 
                           Expanded(
                               child: Divider(
                                 thickness: 0.7,
                                 indent: 1,
                                 endIndent: 25,
-                                color: corSecundaria,
+                                color: primaryColor,
                               ),
                           ),
                       ]
@@ -141,7 +212,7 @@ class LoginPage extends StatelessWidget {
                         const Text(
                           "Não possui uma conta? ",
                           style: TextStyle(
-                            color: corSecundaria,
+                            color: textColor,
                           ),
                         ),
                         TextButton(

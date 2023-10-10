@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mauanews/components/button_widget.dart';
-import 'package:mauanews/components/imagens_login.dart';
 import 'package:mauanews/components/text_field.dart';
 import 'package:mauanews/utils/colors.dart';
-import 'feed.dart';
 
 class RecoverPassword extends StatelessWidget {
   RecoverPassword({super.key});
@@ -25,49 +23,45 @@ class RecoverPassword extends StatelessWidget {
               Column(
                 children: [
 
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 55),
 
-                  Image.asset(
-                    "assets/images/logo.png",
-                    height: 100,
-                    width: 100,
-                    ),
+                  const Icon(Icons.lock_outlined, size: 170, color: Colors.grey,),
 
                   const SizedBox(height: 30),
                   
                   const Text(
                     'Recupere a sua senha',
                     style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 32,
+                      color: textColor,
+                      fontSize: 36,
                       fontWeight: FontWeight.bold,
                       ),
                     ),
 
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 15),
 
                     const Text(
                     "Por favor, informe seu endereço de e-mail",
                     style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 16,
+                      color: secondTextColor,
+                      fontSize: 19,
                       ),
                     ),
                     const Text(
                     "associado a sua conta para que possamos",
                     style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 16,
+                      color: secondTextColor,
+                      fontSize: 19,
                       ),
                     ),
                     const Text(
                     "enviar um link de redefinição",
                     style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 16,
+                      color: secondTextColor,
+                      fontSize: 19,
                       ),
                     ),
-                    const SizedBox(height: 25),
+                    const SizedBox(height: 30),
 
                     MyTextField(
                       controller: emailController,
