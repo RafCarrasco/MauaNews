@@ -20,8 +20,24 @@ class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
-  void signUserIn() async{
+  void showErrorMessage(String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: primaryColor,
+          title: Center(
+            child: Text(
+              message = 'Email ou senha inválidos',
+              style: const TextStyle(color: secondTextColor),
+            ),
+          ),
+        );
+      },
+    );
+  }
 
+  void signUserIn() async{
     showDialog(
       context: context, 
       builder: (context) {
@@ -31,66 +47,17 @@ class _LoginPageState extends State<LoginPage> {
       },
     );
 
-    // try sign in
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text,
         password: passwordController.text,
       );
-      // pop the loading circle
       Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
-      // pop the loading circle
       Navigator.pop(context);
-      // WRONG EMAIL
-      if (e.code == 'user-not-found') {
-        // show error to user
-        wrongEmailMessage();
-      }
-
-      // WRONG PASSWORD
-      else if (e.code == 'wrong-password') {
-        // show error to user
-        wrongPasswordMessage();
-      }
-    }
+      showErrorMessage(e.code);
   }
-
-  // wrong email message popup
-  void wrongEmailMessage() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return const AlertDialog(
-          backgroundColor: Colors.deepPurple,
-          title: Center(
-            child: Text(
-              'Email incorreto',
-              style: TextStyle(color: secondTextColor),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  // wrong password message popup
-  void wrongPasswordMessage() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return const AlertDialog(
-          backgroundColor: Colors.deepPurple,
-          title: Center(
-            child: Text(
-              'Senha incorreta',
-              style: TextStyle(color: secondTextColor),
-            ),
-          ),
-        );
-      },
-    );
-  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +71,7 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 0,),
 
                   Image.asset(
-                    "assets/images/logoteste2.png",
+                    "assets/images/logo.png",
                     height: 200,
                     width: 300,
                     ),
