@@ -29,13 +29,13 @@ class FeedPage extends StatelessWidget {
               Column(
                 children: [
                   const SizedBox(height: 25),
-
+                    Text("Entrou com: ${user.email!}",),
                     ButtonWidget(
                       text: "VAI PRO PERFIL",
                       onTap: (){
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const ProfilePage()),
+                          MaterialPageRoute(builder: (context) => ProfilePage()),
                         );                          
                       },
                     ),

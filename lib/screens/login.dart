@@ -72,11 +72,11 @@ class _LoginPageState extends State<LoginPage> {
 
                   Image.asset(
                     "assets/images/logo.png",
-                    height: 200,
-                    width: 300,
+                    height: 190,
+                    width: 290,
                     ),
 
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 20),
                   
                   const Text(
                     'Seja bem vindo(a) ao MauaNews!',
