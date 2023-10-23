@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mauanews/components/button_widget.dart';
 import 'package:mauanews/components/imagens_login.dart';
 import 'package:mauanews/components/text_field.dart';
+import 'package:mauanews/screens/feed.dart';
 import 'package:mauanews/screens/login.dart';
 import 'package:mauanews/utils/colors.dart';
 import '../components/text_field_visibility.dart';
@@ -39,39 +41,70 @@ class _SignUpState extends State<SignUp> {
   }
 
   Future<void> signUserUp() async {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      },
-    );
+  showDialog(
+    context: context,
+    builder: (context) {
+      return const Center();
+    },
+  );
 
-    try {
-      if (passwordController.text == confirmpasswordController.text) {
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: emailController.text,
-          password: passwordController.text,
-        );
-      } else {
-        Navigator.pop(context);
-        showErrorMessage("As senhas não correspondem");
+  try {
+    if (passwordController.text == confirmpasswordController.text) {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final firestore = FirebaseFirestore.instance;
+        final userDoc = await firestore.collection('usuarios').doc(user.uid).get();
+        if (!userDoc.exists) {
+          await createUserDataInFirestore(user.uid, user.email!);
+        }
       }
-    } on FirebaseAuthException catch (e) {
+      Navigator.pop(context); 
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => FeedPage()), // Substitua 'HomePage' pela tela principal do seu aplicativo
+      );
+    } else {
       Navigator.pop(context);
-
-      String errorMessage = "Erro ao criar conta";
-
-      if (e.code == "email-already-in-use") {
-        errorMessage = "O email já está sendo usado. Tente outro.";
-      } else if (e.code == "weak-password") {
-        errorMessage = "A senha é muito fraca. Escolha uma senha mais segura.";
-      }
-
-      showErrorMessage(errorMessage);
+      showErrorMessage("As senhas não correspondem");
     }
+  } on FirebaseAuthException catch (e) {
+    Navigator.pop(context); // Fecha o diálogo de progresso em caso de erro
+    String errorMessage = "Erro ao criar conta";
+    // Lida com os erros
+    // ...
+   showErrorMessage(errorMessage);
   }
+}
+
+  Future<void> createUserDataInFirestore(String userId, String email) async {
+  final firestore = FirebaseFirestore.instance;
+
+  try {
+    await firestore.collection('usuarios').doc(userId).set({
+      'email': email,
+      // Adicione outros campos conforme necessário
+    });
+
+    await firestore.collection('usuarios/$userId/fotos').doc('FotoPerfil').set({
+      'url': 'URL da foto de perfil',
+      // Outros campos específicos da foto de perfil
+    });
+
+    await firestore.collection('usuarios/$userId/fotos').doc('Posts').set({
+      // Outros campos relacionados aos posts do usuário
+    });
+  } catch (e) {
+    print("Erro ao criar dados no Firestore: $e");
+    showErrorMessage("Erro ao criar dados no Firestore");
+  }
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,128 +118,123 @@ class _SignUpState extends State<SignUp> {
                     "assets/images/logo.png",
                     height: 190,
                     width: 290,
-                    ),
-
+                  ),
                   const SizedBox(height: 10),
-                  
                   const Text(
                     'Vamos criar uma conta para você!',
                     style: TextStyle(
                       color: textColor,
                       fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  MyTextField(
+                    controller: emailController,
+                    hintText: "Digite seu email",
+                    icon: const Icon(Icons.email_outlined, size: 20, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 20),
+                  MyTextFieldWithVisibility(
+                    controller: passwordController,
+                    hintText: "Digite sua senha",
+                    obscureText: true,
+                    icon: const Icon(Icons.lock_outlined, size: 20, color: Colors.grey),
+                    onPasswordVisibilityChanged: (bool isVisible) {},
+                  ),
+                  const SizedBox(height: 20),
+                  MyTextFieldWithVisibility(
+                    controller: confirmpasswordController,
+                    hintText: "Confirme a sua senha",
+                    obscureText: true,
+                    icon: const Icon(Icons.lock_outlined, size: 20, color: Colors.grey),
+                    onPasswordVisibilityChanged: (bool isVisible) {},
+                  ),
+                  const SizedBox(height: 25),
+                  ButtonWidget(
+                    text: "Criar Conta",
+                    onTap: signUserUp,
+                  ),
+                  const SizedBox(height: 15),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Já possui uma conta?",
+                        style: TextStyle(
+                          color: textColor,
+                        ),
                       ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    MyTextField(
-                      controller: emailController,
-                      hintText: "Digite seu email",
-                      icon: const Icon(Icons.email_outlined, size: 20, color: Colors.grey),
-                    ),
-                    
-                    const SizedBox(height: 20),
-
-                    MyTextFieldWithVisibility(
-                      controller: passwordController,
-                      hintText: "Digite sua senha",
-                      obscureText: true,
-                      icon: const Icon(Icons.lock_outlined, size: 20, color: Colors.grey),
-                      onPasswordVisibilityChanged: (bool isVisible) {},
-                    ),
-
-                      const SizedBox(height: 20),
-
-                    MyTextFieldWithVisibility(
-                      controller: confirmpasswordController,
-                      hintText: "Confirme a sua senha",
-                      obscureText: true,
-                      icon: const Icon(Icons.lock_outlined, size: 20, color: Colors.grey),
-                      onPasswordVisibilityChanged: (bool isVisible) {},
-                    ),
-
-                    const SizedBox(height: 25),
-
-                    ButtonWidget(
-                      text: "Criar Conta",
-                      onTap: signUserUp,
-                    ),
-
-                    const SizedBox(height: 15),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Já possui uma conta?",
+                      TextButton(
+                        child: const Text(
+                          "Faça Login agora",
                           style: TextStyle(
-                            color: textColor,
+                            color: linkText,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        TextButton(
-                          child: const Text(
-                            "Faça Login agora",
-                            style: TextStyle(
-                              color: linkText, 
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                            onPressed: (){
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const LoginPage()),
-                              );
-                            },
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const LoginPage()),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+                  const Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Divider(
+                          thickness: 0.7,
+                          indent: 25,
+                          endIndent: 1,
+                          color: secondaryColor,
                         ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 15),
-
-                    const Row(
-                      children: <Widget>[
-                          Expanded(
-                              child: Divider(
-                                thickness: 0.7,
-                                indent: 25,
-                                endIndent: 1,
-                                color: secondaryColor,
-                              ),
-                          ),       
-
-                          Text(
-                            "  Ou registre-se com:  ",
-                            style: TextStyle(color: textColor),
-                            ),
-                            
-                          Expanded(
-                              child: Divider(
-                                thickness: 0.7,
-                                indent: 1,
-                                endIndent: 25,
-                                color: secondaryColor,
-                              ),
-                          ),
-                      ]
-                    ),
-
-                    const SizedBox(height: 25),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ImagensLogin(
-                            onTap: () => AuthService().signInWithGoogle(),
-                            imagePath: "assets/images/google.png"
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                      ),
+                      Text(
+                        "  Ou registre-se com:  ",
+                        style: TextStyle(color: textColor),
+                      ),
+                      Expanded(
+                        child: Divider(
+                          thickness: 0.7,
+                          indent: 1,
+                          endIndent: 25,
+                          color: secondaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 25),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ImagensLogin(
+                        onTap: () async {
+                          try {
+                            await AuthService().signInWithGoogle();
+                            final user = FirebaseAuth.instance.currentUser;
+                            await createUserDataInFirestore(user!.uid, user.email!);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => FeedPage()),
+                            );
+                          } catch (e) {
+                            print("Erro ao registrar com o Google: $e");
+                            showErrorMessage("Erro ao registrar com o Google");
+                          }
+                        },
+                        imagePath: "assets/images/google.png",
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
-      );
+      ),
+    );
   }
 }

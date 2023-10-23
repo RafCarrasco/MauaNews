@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mauanews/screens/feed.dart';
-import 'package:mauanews/screens/login.dart';
 import '../components/custom_icon_button.dart';
 import '../utils/colors.dart';
 
