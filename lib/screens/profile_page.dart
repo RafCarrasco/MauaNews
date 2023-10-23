@@ -10,25 +10,17 @@ class ProfilePage extends StatelessWidget {
 
   final user = FirebaseAuth.instance.currentUser!;
 
-  void signUserOut(BuildContext context) async {
-    await FirebaseAuth.instance.signOut();
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginPage()),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(user.displayName ?? 'Nome do Usuário'),
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            icon: const Icon(Icons.exit_to_app),
             onPressed: () {
-              signUserOut(context);
+              FirebaseAuth.instance.signOut();
             },
+            icon: const Icon(Icons.logout),
           ),
         ],
       ),
@@ -120,15 +112,13 @@ class ProfilePage extends StatelessWidget {
             icon: Icons.search,
             color: primaryColor,
             iconSize: 32,
-            onPressed: () {
-            },
+            onPressed: () {},
           ),
           CustomIconButton(
             icon: Icons.add_circle_outline_rounded,
             color: primaryColor,
             iconSize: 32,
-            onPressed: () {
-            },
+            onPressed: () {},
           ),
           CustomIconButton(
             icon: Icons.account_circle_rounded,

@@ -19,7 +19,7 @@ class MyTextField extends StatelessWidget {
       width: 450,
       padding: const EdgeInsets.symmetric(horizontal: 25.0),
       child: TextField(
-        style: const TextStyle(color: Colors.black),
+        style: const TextStyle(color: secondTextColor),
         controller: controller,
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
@@ -35,7 +35,7 @@ class MyTextField extends StatelessWidget {
           fillColor: textBoxes,
           filled: true,
           hintText: hintText,
-          hintStyle: const TextStyle(color: Color.fromARGB(255, 122, 122, 122)),
+          hintStyle: const TextStyle(color: secondTextColor),
         ),
       ),
     );

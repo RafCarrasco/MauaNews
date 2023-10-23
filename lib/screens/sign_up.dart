@@ -134,6 +134,35 @@ class _SignUpState extends State<SignUp> {
 
                     const SizedBox(height: 15),
 
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "Já possui uma conta?",
+                          style: TextStyle(
+                            color: textColor,
+                          ),
+                        ),
+                        TextButton(
+                          child: const Text(
+                            "Faça Login agora",
+                            style: TextStyle(
+                              color: linkText, 
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                            onPressed: (){
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const LoginPage()),
+                              );
+                            },
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 15),
+
                     const Row(
                       children: <Widget>[
                           Expanded(
@@ -161,7 +190,7 @@ class _SignUpState extends State<SignUp> {
                       ]
                     ),
 
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 25),
 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -170,44 +199,6 @@ class _SignUpState extends State<SignUp> {
                             onTap: () => AuthService().signInWithGoogle(),
                             imagePath: "assets/images/google.png"
                           ),
-
-                          const SizedBox(width: 30),
-
-                          ImagensLogin(
-                            onTap: (){
-
-                            },
-                            imagePath: "assets/images/github.png"
-                          ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 15),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Já possui uma conta?",
-                          style: TextStyle(
-                            color: textColor,
-                          ),
-                        ),
-                        TextButton(
-                          child: const Text(
-                            "Faça Login agora",
-                            style: TextStyle(
-                              color: linkText, 
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                            onPressed: (){
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const LoginPage()),
-                              );
-                            },
-                        ),
                       ],
                     ),
                   ],

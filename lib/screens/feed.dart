@@ -9,14 +9,11 @@ class FeedPage extends StatelessWidget {
 
   final user = FirebaseAuth.instance.currentUser!;
 
-  void signUserOut() {
-    FirebaseAuth.instance.signOut();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: null,
         title: const Text('Feed'),
       ),
       body: Column(

@@ -31,7 +31,7 @@ class _MyTextFieldWithVisibilityState extends State<MyTextFieldWithVisibility> {
       width: 450,
       padding: const EdgeInsets.symmetric(horizontal: 25.0),
       child: TextField(
-        style: const TextStyle(color: Colors.black),
+        style: const TextStyle(color: secondTextColor),
         controller: widget.controller,
         obscureText: !_passwordVisible,
         decoration: InputDecoration(
@@ -60,7 +60,7 @@ class _MyTextFieldWithVisibilityState extends State<MyTextFieldWithVisibility> {
           fillColor: textBoxes,
           filled: true,
           hintText: widget.hintText,
-          hintStyle: const TextStyle(color: Color.fromARGB(255, 122, 122, 122)),
+          hintStyle: const TextStyle(color: secondTextColor),
         ),
       ),
     );

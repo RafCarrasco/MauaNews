@@ -138,7 +138,35 @@ class _LoginPageState extends State<LoginPage> {
                       );
                     },
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 5),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Não possui uma conta? ",
+                        style: TextStyle(
+                          color: textColor,
+                        ),
+                      ),
+                      TextButton(
+                        child: const Text(
+                          "Registre-se",
+                          style: TextStyle(
+                            color: linkText,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => SignUp()),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 15),
                   const Row(
                     children: <Widget>[
                       Expanded(
@@ -171,47 +199,14 @@ class _LoginPageState extends State<LoginPage> {
                         onTap: () => AuthService().signInWithGoogle(),
                         imagePath: "assets/images/google.png",
                       ),
-                      const SizedBox(width: 30),
-                      ImagensLogin(
-                        onTap: () {},
-                        imagePath: "assets/images/github.png",
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 25),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "Não possui uma conta? ",
-                        style: TextStyle(
-                          color: textColor,
-                        ),
-                      ),
-                      TextButton(
-                        child: const Text(
-                          "Registre-se",
-                          style: TextStyle(
-                            color: linkText,
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => SignUp()),
-                          );
-                        },
-                      ),
                     ],
                   ),
                 ],
               )
               ],
-            ),
           ),
         ),
-      );
+      ),
+    );
   }
 }
