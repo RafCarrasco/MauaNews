@@ -5,9 +5,11 @@ import 'package:mauanews/components/imagens_login.dart';
 import 'package:mauanews/components/text_field.dart';
 import 'package:mauanews/screens/login.dart';
 import 'package:mauanews/utils/colors.dart';
+import '../components/text_field_visibility.dart';
+import '../services/auth_service.dart';
 
 class SignUp extends StatefulWidget {
-  const SignUp({super.key});
+  const SignUp({Key? key}) : super(key: key);
 
   @override
   State<SignUp> createState() => _SignUpState();
@@ -27,7 +29,7 @@ class _SignUpState extends State<SignUp> {
           backgroundColor: primaryColor,
           title: Center(
             child: Text(
-              message = "As senhas não correspondem",
+              message,
               style: const TextStyle(color: secondTextColor),
             ),
           ),
@@ -36,32 +38,40 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  void signUserUp() async{
+  Future<void> signUserUp() async {
     showDialog(
-      context: context, 
+      context: context,
       builder: (context) {
-      return const Center(
-        child: CircularProgressIndicator(),
+        return const Center(
+          child: CircularProgressIndicator(),
         );
       },
     );
-  
-  try {
+
+    try {
       if (passwordController.text == confirmpasswordController.text) {
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: emailController.text,
           password: passwordController.text,
-  );
-      }else{
-        showErrorMessage("message");
+        );
+      } else {
+        Navigator.pop(context);
+        showErrorMessage("As senhas não correspondem");
       }
-      Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       Navigator.pop(context);
-      showErrorMessage(e.code);
+
+      String errorMessage = "Erro ao criar conta";
+
+      if (e.code == "email-already-in-use") {
+        errorMessage = "O email já está sendo usado. Tente outro.";
+      } else if (e.code == "weak-password") {
+        errorMessage = "A senha é muito fraca. Escolha uma senha mais segura.";
+      }
+
+      showErrorMessage(errorMessage);
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,26 +102,27 @@ class _SignUpState extends State<SignUp> {
                     MyTextField(
                       controller: emailController,
                       hintText: "Digite seu email",
-                      obscureText: false,
-                      icon: const Icon(Icons.email_outlined, size: 20, color: Colors.grey,),
+                      icon: const Icon(Icons.email_outlined, size: 20, color: Colors.grey),
                     ),
-
+                    
                     const SizedBox(height: 20),
 
-                    MyTextField(
+                    MyTextFieldWithVisibility(
                       controller: passwordController,
                       hintText: "Digite sua senha",
                       obscureText: true,
-                      icon: const Icon(Icons.lock_outlined, size: 20, color: Colors.grey,),
+                      icon: const Icon(Icons.lock_outlined, size: 20, color: Colors.grey),
+                      onPasswordVisibilityChanged: (bool isVisible) {},
                     ),
 
-                    const SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
-                    MyTextField(
+                    MyTextFieldWithVisibility(
                       controller: confirmpasswordController,
-                      hintText: "Confirme sua senha",
+                      hintText: "Confirme a sua senha",
                       obscureText: true,
-                      icon: const Icon(Icons.lock_outlined, size: 20, color: Colors.grey,),
+                      icon: const Icon(Icons.lock_outlined, size: 20, color: Colors.grey),
+                      onPasswordVisibilityChanged: (bool isVisible) {},
                     ),
 
                     const SizedBox(height: 25),
@@ -137,8 +148,8 @@ class _SignUpState extends State<SignUp> {
                           Text(
                             "  Ou registre-se com:  ",
                             style: TextStyle(color: textColor),
-                            ),        
-
+                            ),
+                            
                           Expanded(
                               child: Divider(
                                 thickness: 0.7,
@@ -152,14 +163,22 @@ class _SignUpState extends State<SignUp> {
 
                     const SizedBox(height: 15),
 
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          ImagensLogin(imagePath: "assets/images/google.png"),
+                          ImagensLogin(
+                            onTap: () => AuthService().signInWithGoogle(),
+                            imagePath: "assets/images/google.png"
+                          ),
 
-                          SizedBox(width: 30),
+                          const SizedBox(width: 30),
 
-                          ImagensLogin(imagePath: "assets/images/github.png"),
+                          ImagensLogin(
+                            onTap: (){
+
+                            },
+                            imagePath: "assets/images/github.png"
+                          ),
                       ],
                     ),
 

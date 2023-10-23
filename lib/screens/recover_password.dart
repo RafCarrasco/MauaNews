@@ -66,8 +66,7 @@ class RecoverPassword extends StatelessWidget {
                     MyTextField(
                       controller: emailController,
                       hintText: "Digite seu email",
-                      obscureText: false,
-                      icon: const Icon(Icons.email_outlined, size: 20, color: Colors.grey,),
+                      icon: const Icon(Icons.email_outlined, size: 20, color: Colors.grey,), 
                     ),
 
                     const SizedBox(height: 25),
