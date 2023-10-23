@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mauanews/components/button_widget.dart';
@@ -40,40 +39,38 @@ class _LoginPageState extends State<LoginPage> {
 
 
   Future<void> signUserIn() async {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    },
-  );
-
-  try {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: emailController.text,
-      password: passwordController.text,
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
     );
 
-    Navigator.pop(context);
-  } on FirebaseAuthException catch (e) {
-    Navigator.pop(context);
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+      Navigator.pop(context);
+    } on FirebaseAuthException catch (e) {
+      Navigator.pop(context);
 
-    String errorMessage = 'Erro ao fazer login';
+      String errorMessage = 'Erro ao fazer login';
 
-    if (e.code == 'user-not-found') {
-      errorMessage = 'Usuário não encontrado. Verifique o email.';
-    } else if (e.code == 'wrong-password') {
-      errorMessage = 'Senha incorreta. Tente novamente.';
+      if (e.code == 'user-not-found') {
+        errorMessage = 'Usuário não encontrado. Verifique o email.';
+      } else if (e.code == 'wrong-password') {
+        errorMessage = 'Senha incorreta. Tente novamente.';
+      }
+
+      showErrorMessage(errorMessage);
+    } catch (e) {
+      print(e.toString());
+      showErrorMessage('Erro ao fazer login');
     }
-
-    showErrorMessage(errorMessage);
-  } catch (e) {
-    print(e.toString());
-    showErrorMessage('Erro ao fazer login');
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +122,6 @@ class _LoginPageState extends State<LoginPage> {
                     text: "Login",
                     onTap: signUserIn,
                   ),
-                  
                   const SizedBox(height: 25),
                   TextButton(
                     child: const Text(
@@ -207,7 +203,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ],
               )
-              ],
+            ],
           ),
         ),
       ),

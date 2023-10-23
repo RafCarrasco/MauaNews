@@ -66,14 +66,14 @@ class _SignUpState extends State<SignUp> {
       Navigator.pop(context); 
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => FeedPage()), // Substitua 'HomePage' pela tela principal do seu aplicativo
+        MaterialPageRoute(builder: (context) => FeedPage()),
       );
     } else {
       Navigator.pop(context);
       showErrorMessage("As senhas não correspondem");
     }
-  } on FirebaseAuthException catch (e) {
-    Navigator.pop(context); // Fecha o diálogo de progresso em caso de erro
+  } on FirebaseAuthException {
+    Navigator.pop(context);
     String errorMessage = "Erro ao criar conta";
     // Lida com os erros
     // ...
@@ -87,16 +87,13 @@ class _SignUpState extends State<SignUp> {
   try {
     await firestore.collection('usuarios').doc(userId).set({
       'email': email,
-      // Adicione outros campos conforme necessário
     });
 
     await firestore.collection('usuarios/$userId/fotos').doc('FotoPerfil').set({
       'url': 'URL da foto de perfil',
-      // Outros campos específicos da foto de perfil
     });
 
     await firestore.collection('usuarios/$userId/fotos').doc('Posts').set({
-      // Outros campos relacionados aos posts do usuário
     });
   } catch (e) {
     print("Erro ao criar dados no Firestore: $e");

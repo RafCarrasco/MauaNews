@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mauanews/screens/create_post_page.dart';
 import 'package:mauanews/screens/profile_page.dart';
 import '../components/custom_icon_button.dart';
 import '../utils/colors.dart';
@@ -113,6 +114,11 @@ class FeedPage extends StatelessWidget {
             color: primaryColor,
             iconSize: 32,
             onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => ImageUploadPage(),
+                ),
+              );
             },
           ),
           CustomIconButton(

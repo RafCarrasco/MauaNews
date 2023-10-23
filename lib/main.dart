@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mauanews/screens/auth_page.dart';
-import 'package:mauanews/screens/login.dart';
 import 'package:mauanews/utils/colors.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -17,7 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const LoginPage(),
+      home: const AuthPage(),
       theme: ThemeData(scaffoldBackgroundColor: backgroundApp),
     );
   }
