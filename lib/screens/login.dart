@@ -38,7 +38,17 @@ class _LoginPageState extends State<LoginPage> {
       },
     );
   }
-
+Future<void> signIn() async{
+  try{
+    await AuthService().signInWithGoogle();
+  }catch (e){
+      Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => FeedPage()),
+            );
+  }
+}
 
   Future<void> signUserIn() async {
     showDialog(
@@ -222,14 +232,7 @@ class _LoginPageState extends State<LoginPage> {
                     children: [
                       ImagensLogin(
                         onTap: () async {
-                          
-                            await AuthService().signInWithGoogle();
-                            Navigator.pushNamed(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => FeedPage()) as String,
-                            );
-                          
+                          signIn();
                         },
                         imagePath: "assets/images/google.png",
                       ),
