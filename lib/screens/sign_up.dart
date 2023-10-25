@@ -49,6 +49,7 @@ class _SignUpState extends State<SignUp> {
     );
 
     final firestore = FirebaseFirestore.instance;
+
     try {
       if (passwordController.text == confirmpasswordController.text) {
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -59,13 +60,13 @@ class _SignUpState extends State<SignUp> {
         final user = FirebaseAuth.instance.currentUser;
         if (user != null) {
           final userDoc =
-              await firestore.collection('Usuarios').doc(user.uid).get();
+              await firestore.collection('usuarios').doc(user.uid).get();
           if (!userDoc.exists) {
             final us = {
               'email': emailController.text,
               'senha': passwordController.text
             };
-            await firestore.collection('Usuarios').doc(user.uid).set(us);
+            await firestore.collection('usuarios').doc(user.uid).set(us);
           }
             Navigator.pop(context);
             Navigator.push(

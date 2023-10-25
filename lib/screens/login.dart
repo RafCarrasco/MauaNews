@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mauanews/components/button_widget.dart';
 import 'package:mauanews/components/imagens_login.dart';
 import 'package:mauanews/components/text_field.dart';
 import 'package:mauanews/components/text_field_visibility.dart';
+import 'package:mauanews/screens/feed.dart';
 import 'package:mauanews/screens/recover_password.dart';
 import 'package:mauanews/screens/sign_up.dart';
 import 'package:mauanews/services/auth_service.dart';
@@ -71,6 +73,29 @@ class _LoginPageState extends State<LoginPage> {
       showErrorMessage('Erro ao fazer login');
     }
   }
+
+  Future<void> createUserDataInFirestore(String userId, String email) async {
+    final firestore = FirebaseFirestore.instance;
+
+    try {
+      await firestore.collection('usuarios').doc(userId).set({
+        'email': email,
+      });
+
+      await firestore
+          .collection('usuarios/$userId/fotos')
+          .doc('FotoPerfil')
+          .set({
+        'url': 'URL da foto de perfil',
+      });
+
+      await firestore.collection('usuarios/$userId/fotos').doc('Posts').set({});
+    } catch (e) {
+      print("Erro ao criar dados no Firestore: $e");
+      showErrorMessage("Erro ao criar dados no Firestore");
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -196,7 +221,16 @@ class _LoginPageState extends State<LoginPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ImagensLogin(
-                        onTap: () => AuthService().signInWithGoogle(),
+                        onTap: () async {
+                          
+                            await AuthService().signInWithGoogle();
+                            Navigator.pushNamed(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => FeedPage()) as String,
+                            );
+                          
+                        },
                         imagePath: "assets/images/google.png",
                       ),
                     ],
