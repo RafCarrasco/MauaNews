@@ -41,66 +41,81 @@ class _SignUpState extends State<SignUp> {
   }
 
   Future<void> signUserUp() async {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return const Center();
-    },
-  );
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const Center();
+      },
+    );
 
-  try {
-    if (passwordController.text == confirmpasswordController.text) {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text,
-        password: passwordController.text,
-      );
+    final firestore = FirebaseFirestore.instance;
+    try {
+      if (passwordController.text == confirmpasswordController.text) {
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailController.text,
+          password: passwordController.text,
+        );
 
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        final firestore = FirebaseFirestore.instance;
-        final userDoc = await firestore.collection('usuarios').doc(user.uid).get();
-        if (!userDoc.exists) {
-          await createUserDataInFirestore(user.uid, user.email!);
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final userDoc =
+              await firestore.collection('Usuarios').doc(user.uid).get();
+          if (!userDoc.exists) {
+            final us = {
+              'email': emailController.text,
+              'senha': passwordController.text
+            };
+            await firestore.collection('Usuarios').doc(user.uid).set(us);
+          }
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => FeedPage()),
+            );
         }
+      } else {
+        Navigator.pop(context);
+        showErrorMessage("As senhas não correspondem");
       }
-      Navigator.pop(context); 
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => FeedPage()),
-      );
-    } else {
+    } on FirebaseAuthException catch (e) {
       Navigator.pop(context);
-      showErrorMessage("As senhas não correspondem");
+      if (e.code == 'email-already-in-use') {
+        showErrorMessage(
+            "Este e-mail já está cadastrado. Tente fazer login ou recuperar a senha.");
+      } else if (e.code == 'invalid-email') {
+        showErrorMessage("O e-mail fornecido é inválido.");
+      } else if (e.code == 'weak-password') {
+        showErrorMessage(
+            "A senha é muito fraca. Ela deve conter letras maiúsculas, minúsculas, números e caracteres especiais.");
+      } else if (e.code == 'operation-not-allowed') {
+        showErrorMessage("Esta operação não é permitida.");
+      } else {
+        showErrorMessage("Erro ao criar conta: ${e.message}");
+      }
     }
-  } on FirebaseAuthException {
-    Navigator.pop(context);
-    String errorMessage = "Erro ao criar conta";
-    // Lida com os erros
-    // ...
-   showErrorMessage(errorMessage);
   }
-}
 
   Future<void> createUserDataInFirestore(String userId, String email) async {
-  final firestore = FirebaseFirestore.instance;
+    final firestore = FirebaseFirestore.instance;
 
-  try {
-    await firestore.collection('usuarios').doc(userId).set({
-      'email': email,
-    });
+    try {
+      await firestore.collection('usuarios').doc(userId).set({
+        'email': email,
+      });
 
-    await firestore.collection('usuarios/$userId/fotos').doc('FotoPerfil').set({
-      'url': 'URL da foto de perfil',
-    });
+      await firestore
+          .collection('usuarios/$userId/fotos')
+          .doc('FotoPerfil')
+          .set({
+        'url': 'URL da foto de perfil',
+      });
 
-    await firestore.collection('usuarios/$userId/fotos').doc('Posts').set({
-    });
-  } catch (e) {
-    print("Erro ao criar dados no Firestore: $e");
-    showErrorMessage("Erro ao criar dados no Firestore");
+      await firestore.collection('usuarios/$userId/fotos').doc('Posts').set({});
+    } catch (e) {
+      print("Erro ao criar dados no Firestore: $e");
+      showErrorMessage("Erro ao criar dados no Firestore");
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -128,14 +143,16 @@ class _SignUpState extends State<SignUp> {
                   MyTextField(
                     controller: emailController,
                     hintText: "Digite seu email",
-                    icon: const Icon(Icons.email_outlined, size: 20, color: Colors.grey),
+                    icon: const Icon(Icons.email_outlined,
+                        size: 20, color: Colors.grey),
                   ),
                   const SizedBox(height: 20),
                   MyTextFieldWithVisibility(
                     controller: passwordController,
                     hintText: "Digite sua senha",
                     obscureText: true,
-                    icon: const Icon(Icons.lock_outlined, size: 20, color: Colors.grey),
+                    icon: const Icon(Icons.lock_outlined,
+                        size: 20, color: Colors.grey),
                     onPasswordVisibilityChanged: (bool isVisible) {},
                   ),
                   const SizedBox(height: 20),
@@ -143,13 +160,16 @@ class _SignUpState extends State<SignUp> {
                     controller: confirmpasswordController,
                     hintText: "Confirme a sua senha",
                     obscureText: true,
-                    icon: const Icon(Icons.lock_outlined, size: 20, color: Colors.grey),
+                    icon: const Icon(Icons.lock_outlined,
+                        size: 20, color: Colors.grey),
                     onPasswordVisibilityChanged: (bool isVisible) {},
                   ),
                   const SizedBox(height: 25),
                   ButtonWidget(
                     text: "Criar Conta",
-                    onTap: signUserUp,
+                    onTap: () {
+                      signUserUp();
+                    },
                   ),
                   const SizedBox(height: 15),
                   Row(
@@ -172,7 +192,8 @@ class _SignUpState extends State<SignUp> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const LoginPage()),
+                            MaterialPageRoute(
+                                builder: (context) => const LoginPage()),
                           );
                         },
                       ),
@@ -212,10 +233,12 @@ class _SignUpState extends State<SignUp> {
                           try {
                             await AuthService().signInWithGoogle();
                             final user = FirebaseAuth.instance.currentUser;
-                            await createUserDataInFirestore(user!.uid, user.email!);
+                            await createUserDataInFirestore(
+                                user!.uid, user.email!);
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => FeedPage()),
+                              MaterialPageRoute(
+                                  builder: (context) => FeedPage()),
                             );
                           } catch (e) {
                             print("Erro ao registrar com o Google: $e");
