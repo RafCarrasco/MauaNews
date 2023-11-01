@@ -8,7 +8,7 @@ import 'package:mauanews/components/text_field_visibility.dart';
 import 'package:mauanews/screens/feed.dart';
 import 'package:mauanews/screens/recover_password.dart';
 import 'package:mauanews/screens/sign_up.dart';
-import 'package:mauanews/services/auth_service.dart';
+// import 'package:mauanews/services/auth_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mauanews/utils/colors.dart';
 
@@ -22,6 +22,13 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   void showErrorMessage(String message) {
     showDialog(
@@ -39,6 +46,7 @@ class _LoginPageState extends State<LoginPage> {
       },
     );
   }
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
@@ -46,7 +54,8 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
-        return null; // O usuário cancelou o login.
+        showErrorMessage("Login com o Google cancelado.");
+        return null;
       }
 
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
@@ -58,25 +67,18 @@ class _LoginPageState extends State<LoginPage> {
       final UserCredential authResult = await _auth.signInWithCredential(credential);
       final User? user = authResult.user;
 
+      if (user != null) {
+        // Crie os dados do usuário no Firestore aqui
+        createUserDataInFirestore(user.uid, user.email ?? "");
+      }
+
       return user;
     } catch (e) {
       print('Erro ao fazer login com o Google: $e');
+      showErrorMessage("Erro ao fazer login com o Google.");
       return null;
     }
   }
-
-
-Future<void> signIn() async{
-  try{
-    await AuthService().signInWithGoogle();
-  }catch (e){
-      Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => FeedPage()),
-            );
-  }
-}
 
   Future<void> signUserIn() async {
     showDialog(
@@ -85,8 +87,7 @@ Future<void> signIn() async{
         return const Center(
           child: CircularProgressIndicator(),
         );
-      },
-    );
+      });
 
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -94,6 +95,11 @@ Future<void> signIn() async{
         password: passwordController.text,
       );
       Navigator.pop(context);
+      // Navegue para a página de Feed após o login bem-sucedido
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => FeedPage()),
+      );
     } on FirebaseAuthException catch (e) {
       Navigator.pop(context);
 
@@ -133,7 +139,6 @@ Future<void> signIn() async{
       showErrorMessage("Erro ao criar dados no Firestore");
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -177,7 +182,6 @@ Future<void> signIn() async{
                       // Faça algo com o estado da visibilidade da senha
                     },
                   ),
-
 
                   const SizedBox(height: 25),
 

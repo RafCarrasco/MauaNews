@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mauanews/components/add_image_widget.dart';
+import 'package:mauanews/utils/colors.dart';
 
 class ImageUploadPage extends StatefulWidget {
   @override
@@ -15,12 +17,16 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
   final picker = ImagePicker();
   final _storage = FirebaseStorage.instance;
   final _firestore = FirebaseFirestore.instance;
+  final user = FirebaseAuth.instance.currentUser;
+  TextEditingController captionController = TextEditingController();
+  bool isCaptionVisible = false;
 
   Future getImageFromCamera() async {
     final pickedFile = await picker.pickImage(source: ImageSource.camera);
     if (pickedFile != null) {
       setState(() {
         imageFile = File(pickedFile.path);
+        isCaptionVisible = true;
       });
     }
   }
@@ -30,21 +36,37 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
     if (pickedFile != null) {
       setState(() {
         imageFile = File(pickedFile.path);
+        isCaptionVisible = true;
       });
     }
   }
 
-  Future<void> uploadImageToFirebase(File image) async {
-    final Reference storageRef = _storage.ref().child('images/${DateTime.now()}.png');
-    await storageRef.putFile(image);
-    final String imageUrl = await storageRef.getDownloadURL();
+  Future<void> uploadImageToFirebase() async {
+    if (imageFile != null && user != null) {
+      final userId = user!.uid;
+      final Reference storageRef = _storage.ref().child('userPosts/$userId/${DateTime.now()}.png');
+      await storageRef.putFile(imageFile!);
+      final String imageUrl = await storageRef.getDownloadURL();
 
-    // Salvar a URL da imagem no Firestore
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      final userId = user.uid;
-      await _firestore.collection('usuarios').doc(userId).update({
-        'fotoPerfil': imageUrl,
+      // Salvar a foto no Firestore
+      final String caption = captionController.text;
+      await _firestore.collection('userPosts').add({
+        'userId': userId,
+        'imageUrl': imageUrl,
+        'caption': caption,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Imagem enviada com sucesso!'),
+        ),
+      );
+
+      setState(() {
+        imageFile = null;
+        captionController.clear();
+        isCaptionVisible = false;
       });
     }
   }
@@ -53,7 +75,8 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Escolha uma Imagem'),
+        automaticallyImplyLeading: false,
+        title: const Text('Nova publicação'),
       ),
       body: Center(
         child: Column(
@@ -65,29 +88,36 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
                 width: 200,
                 height: 200,
               ),
+              if (isCaptionVisible)
+                Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: captionController,
+                      decoration: const InputDecoration(
+                        hintText: 'Legenda da foto',
+                      ),
+                    ),
+                  ],
+                ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () async {
-                  await uploadImageToFirebase(imageFile!);
-                  setState(() {
-                    imageFile = null;
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Imagem enviada com sucesso!'),
-                    ),
-                  );
-                },
+                onPressed: uploadImageToFirebase,
                 child: Text('Enviar Imagem'),
               ),
             ] else ...[
-              ElevatedButton(
-                onPressed: getImageFromCamera,
-                child: Text('Tirar Foto'),
+              AddImageWidget(
+                icon: Icons.camera_alt,
+                text: 'Tirar Foto',
+                onTap: getImageFromCamera,
+                borderColor: secondaryColor,
               ),
-              ElevatedButton(
-                onPressed: getImageFromGallery,
-                child: Text('Escolher da Galeria'),
+              const SizedBox(height: 15),
+              AddImageWidget(
+                icon: Icons.camera_alt,
+                text: 'Escolher da galeria',
+                onTap: getImageFromGallery,
+                borderColor: secondaryColor,
               ),
             ],
           ],

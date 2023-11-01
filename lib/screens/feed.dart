@@ -14,8 +14,17 @@ class FeedPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: null,
-        title: const Text('Feed'),
+        automaticallyImplyLeading: false,
+        title: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                  Image.asset(
+                 'assets/images/logo.png',
+                  fit: BoxFit.contain,
+                  height: 42,
+              ),
+            ]
+        )
       ),
       body: Column(
         children: [

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mauanews/screens/feed.dart';
 import 'package:mauanews/screens/login.dart';
 
 class AuthPage extends StatelessWidget {
@@ -12,7 +13,7 @@ class AuthPage extends StatelessWidget {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if(snapshot.hasData){
-            return LoginPage();
+            return FeedPage();
           }
           else{
             return LoginPage();

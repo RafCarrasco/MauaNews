@@ -23,6 +23,7 @@ class _SignUpState extends State<SignUp> {
   final passwordController = TextEditingController();
   final confirmpasswordController = TextEditingController();
 
+
   void showErrorMessage(String message) {
     showDialog(
       context: context,
@@ -60,13 +61,13 @@ class _SignUpState extends State<SignUp> {
         final user = FirebaseAuth.instance.currentUser;
         if (user != null) {
           final userDoc =
-              await firestore.collection('usuarios').doc(user.uid).get();
+              await firestore.collection('usuarios').doc(user.email).get();
           if (!userDoc.exists) {
             final us = {
               'email': emailController.text,
               'senha': passwordController.text
             };
-            await firestore.collection('usuarios').doc(user.uid).set(us);
+            await firestore.collection('usuarios').doc(user.email).set(us);
           }
             Navigator.pop(context);
             Navigator.push(
@@ -96,27 +97,6 @@ class _SignUpState extends State<SignUp> {
     }
   }
 
-  Future<void> createUserDataInFirestore(String userId, String email) async {
-    final firestore = FirebaseFirestore.instance;
-
-    try {
-      await firestore.collection('usuarios').doc(userId).set({
-        'email': email,
-      });
-
-      await firestore
-          .collection('usuarios/$userId/fotos')
-          .doc('FotoPerfil')
-          .set({
-        'url': 'URL da foto de perfil',
-      });
-
-      await firestore.collection('usuarios/$userId/fotos').doc('Posts').set({});
-    } catch (e) {
-      print("Erro ao criar dados no Firestore: $e");
-      showErrorMessage("Erro ao criar dados no Firestore");
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -230,21 +210,16 @@ class _SignUpState extends State<SignUp> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ImagensLogin(
-                        onTap: () async {
-                          try {
-                            await AuthService().signInWithGoogle();
-                            final user = FirebaseAuth.instance.currentUser;
-                            await createUserDataInFirestore(
-                                user!.uid, user.email!);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => FeedPage()),
-                            );
-                          } catch (e) {
-                            print("Erro ao registrar com o Google: $e");
-                            showErrorMessage("Erro ao registrar com o Google");
-                          }
+                        onTap: () {
+                            AuthService().signInWithGoogle(context);
+                            print("cadastrar google");
+                            // await createUserDataInFirestore(
+                            //     user!.uid, user.email!);
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //       builder: (context) => FeedPage()),
+                            // );
                         },
                         imagePath: "assets/images/google.png",
                       ),
