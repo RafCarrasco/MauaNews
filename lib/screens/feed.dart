@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mauanews/screens/create_post_page.dart';
 import 'package:mauanews/screens/profile_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../components/custom_icon_button.dart';
 import '../utils/colors.dart';
 
@@ -9,6 +11,8 @@ class FeedPage extends StatelessWidget {
   FeedPage({Key? key});
 
   final user = FirebaseAuth.instance.currentUser!;
+  final firestore = FirebaseFirestore.instance;
+  final postsCollection = 'userPosts';
 
   @override
   Widget build(BuildContext context) {
@@ -16,15 +20,14 @@ class FeedPage extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                  Image.asset(
-                 'assets/images/logo.png',
-                  fit: BoxFit.contain,
-                  height: 42,
-              ),
-            ]
-        )
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/images/logo.png',
+              height: 40,
+            ),
+          ],
+        ),
       ),
       body: Column(
         children: [
@@ -38,19 +41,41 @@ class FeedPage extends StatelessWidget {
   }
 
   Widget _buildPosts() {
-    return RefreshIndicator(
-      onRefresh: () async {
+    return StreamBuilder<QuerySnapshot>(
+      stream: firestore.collection(postsCollection).snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        if (!snapshot.hasData) {
+          return Center(child: Text('Sem posts disponíveis.'));
+        }
+
+        final posts = snapshot.data!.docs;
+
+        return ListView.builder(
+          itemCount: posts.length,
+          itemBuilder: (context, index) {
+            final postSnapshot = posts[index];
+            final post = postSnapshot.data() as Map<String, dynamic>;
+            final imageUrl = post['imageUrl'];
+            final caption = post['legenda'];
+            final userId = post['userId'];
+
+            return _buildPost(imageUrl, caption, userId); //NESTA PARTE HÀ UM ERRO COM O CAPTION E USERID, SE EU COLOCO O ORDERBY AQUI TAMBEM DA ERRO
+            //O ERRO È QUE ELE NÂO PUXA AS IMAGENS DO FIREBASE, FICANDO COM A TELA VAZIA
+          },
+        );
       },
-      child: ListView.builder(
-        itemCount: 10,
-        itemBuilder: (context, index) {
-          return _buildPost();
-        },
-      ),
     );
   }
 
-  Widget _buildPost() {
+  Widget _buildPost(DocumentSnapshot postSnapshot) {
+    final post = postSnapshot.data() as Map<String, dynamic>;
+    final imageUrl = post['imageUrl'];
+    final caption = post['caption'];
+
     return Container(
       decoration: const BoxDecoration(
         border: Border(
@@ -64,27 +89,28 @@ class FeedPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               CircleAvatar(
                 radius: 20,
+                backgroundImage: NetworkImage(user.photoURL ?? ''),
               ),
               SizedBox(width: 10),
               Text(
-                'Nome do Usuário',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                user.displayName ?? 'Nome do Usuário',
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ],
           ),
           const SizedBox(height: 10),
           Image.network(
-            'URL_da_foto_postada',
+            imageUrl,
             width: 300,
             height: 300,
             fit: BoxFit.cover,
           ),
           const SizedBox(height: 10),
-          const Text('Legenda da postagem'),
+          Text(caption),
           const SizedBox(height: 10),
         ],
       ),
@@ -108,15 +134,13 @@ class FeedPage extends StatelessWidget {
             icon: Icons.home,
             color: selectedButtons,
             iconSize: 32,
-            onPressed: () {
-            },
+            onPressed: () {},
           ),
           CustomIconButton(
             icon: Icons.search,
             color: primaryColor,
             iconSize: 32,
-            onPressed: () {
-            },
+            onPressed: () {},
           ),
           CustomIconButton(
             icon: Icons.add_circle_outline_rounded,
@@ -125,7 +149,7 @@ class FeedPage extends StatelessWidget {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => ImageUploadPage(),
+                  builder: (context) => CreatePostPage(),
                 ),
               );
             },

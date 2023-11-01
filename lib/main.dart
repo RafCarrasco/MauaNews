@@ -3,29 +3,34 @@ import 'package:mauanews/screens/auth_page.dart';
 import 'package:mauanews/utils/colors.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:provider/provider.dart';
+import 'package:mauanews/services/auth_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final firebaseOptions = DefaultFirebaseOptions.currentPlatform;
   await Firebase.initializeApp(options: firebaseOptions);
 
-  runApp(const MyApp());
+runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context) {  
+    return ChangeNotifierProvider(
+      create: (context) => googleSignProv(), // Substitua 'SeuChangeNotifier' pelo nome da sua classe ChangeNotifier.   
+    child: MaterialApp(
       debugShowCheckedModeBanner: false,
       home: const AuthPage(),
       theme: ThemeData(
-        appBarTheme: const AppBarTheme(
-          color: backgroundApp,
+        scaffoldBackgroundColor: backgroundApp,
+        colorScheme: const ColorScheme.light().copyWith(
+            primary: backgroundApp,
         ),
-        scaffoldBackgroundColor: backgroundApp
-        ),
-    );
+      )
+    )
+  );
   }
 }

@@ -2,13 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mauanews/components/button_widget.dart';
-import 'package:mauanews/components/imagens_login.dart';
 import 'package:mauanews/components/text_field.dart';
 import 'package:mauanews/screens/feed.dart';
 import 'package:mauanews/screens/login.dart';
 import 'package:mauanews/utils/colors.dart';
 import '../components/text_field_visibility.dart';
-import '../services/auth_service.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -42,12 +40,6 @@ class _SignUpState extends State<SignUp> {
   }
 
   Future<void> signUserUp() async {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return const Center();
-      },
-    );
 
     final firestore = FirebaseFirestore.instance;
 
@@ -177,51 +169,6 @@ class _SignUpState extends State<SignUp> {
                                 builder: (context) => const LoginPage()),
                           );
                         },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 15),
-                  const Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Divider(
-                          thickness: 0.7,
-                          indent: 25,
-                          endIndent: 1,
-                          color: secondaryColor,
-                        ),
-                      ),
-                      Text(
-                        "  Ou registre-se com:  ",
-                        style: TextStyle(color: textColor),
-                      ),
-                      Expanded(
-                        child: Divider(
-                          thickness: 0.7,
-                          indent: 1,
-                          endIndent: 25,
-                          color: secondaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 25),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ImagensLogin(
-                        onTap: () {
-                            AuthService().signInWithGoogle(context);
-                            print("cadastrar google");
-                            // await createUserDataInFirestore(
-                            //     user!.uid, user.email!);
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //       builder: (context) => FeedPage()),
-                            // );
-                        },
-                        imagePath: "assets/images/google.png",
                       ),
                     ],
                   ),

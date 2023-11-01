@@ -7,12 +7,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mauanews/components/add_image_widget.dart';
 import 'package:mauanews/utils/colors.dart';
 
-class ImageUploadPage extends StatefulWidget {
+class CreatePostPage extends StatefulWidget {
   @override
-  _ImageUploadPageState createState() => _ImageUploadPageState();
+  _CreatePostPageState createState() => _CreatePostPageState();
 }
 
-class _ImageUploadPageState extends State<ImageUploadPage> {
+class _CreatePostPageState extends State<CreatePostPage> {
   File? imageFile;
   final picker = ImagePicker();
   final _storage = FirebaseStorage.instance;
@@ -48,13 +48,14 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
       await storageRef.putFile(imageFile!);
       final String imageUrl = await storageRef.getDownloadURL();
 
-      // Salvar a foto no Firestore
       final String caption = captionController.text;
       await _firestore.collection('userPosts').add({
         'userId': userId,
         'imageUrl': imageUrl,
         'caption': caption,
-        'timestamp': FieldValue.serverTimestamp(),
+        'likes': 0, 
+        'comments': [],
+        'dataPost': FieldValue.serverTimestamp(),
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -88,23 +89,20 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
                 width: 200,
                 height: 200,
               ),
-              if (isCaptionVisible)
-                Column(
-                  children: [
-                    const SizedBox(height: 20),
-                    TextField(
-                      controller: captionController,
-                      decoration: const InputDecoration(
-                        hintText: 'Legenda da foto',
-                      ),
-                    ),
-                  ],
+              if (isCaptionVisible) ...[
+                const SizedBox(height: 20),
+                TextField(
+                  controller: captionController,
+                  decoration: const InputDecoration(
+                    hintText: 'Legenda da foto',
+                  ),
                 ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: uploadImageToFirebase,
-                child: Text('Enviar Imagem'),
-              ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: uploadImageToFirebase,
+                  child: Text('Enviar Imagem'),
+                ),
+              ],
             ] else ...[
               AddImageWidget(
                 icon: Icons.camera_alt,
@@ -112,7 +110,9 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
                 onTap: getImageFromCamera,
                 borderColor: secondaryColor,
               ),
+
               const SizedBox(height: 15),
+
               AddImageWidget(
                 icon: Icons.camera_alt,
                 text: 'Escolher da galeria',

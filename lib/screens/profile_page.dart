@@ -7,7 +7,9 @@ import 'package:mauanews/screens/create_post_page.dart';
 import 'package:mauanews/screens/edit_profile_page.dart';
 import 'package:mauanews/screens/feed.dart';
 import 'package:mauanews/screens/login.dart';
+import 'package:mauanews/services/auth_service.dart';
 import 'package:mauanews/utils/colors.dart';
+import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key? key});
@@ -22,6 +24,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool isGridSelected = true;
+
+  final timestamp = DateTime.now().millisecondsSinceEpoch;
 
   void signUserOut(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
@@ -89,7 +93,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 onTap: () {
-                  signUserOut(context);
+                  final provider =
+                    Provider.of<googleSignProv>(context, listen: false);
+                provider.logout();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
                 },
               ),
             ],
@@ -218,12 +228,12 @@ class _ProfilePageState extends State<ProfilePage> {
       }
 
       Widget _buildUserPosts() {
-        // Adicione a lógica para carregar os posts dos usuários ou favoritos
         if (isGridSelected) {
           return StreamBuilder(
             stream: FirebaseFirestore.instance
                 .collection('userPosts')
-                .where('userId', isEqualTo: currentUser.uid)
+                .where('userId', isEqualTo: currentUser.uid) //O ERRO È QUE ELE NÂO PUXA AS IMAGENS DO FIREBASE, FICANDO COM A TELA VAZIA, NÂO CONSIGO USAR O ORDERBY
+                .orderBy('dataPost', descending: true) //POR ALGUM MOTIVO ELE NÂO PUXA AS IMAGENS DO BANCO, DEIXANDO A TELA VAZIA, NÂO IMPRIME ERROS NO CONSOLE
                 .snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
@@ -301,7 +311,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ImageUploadPage()),
+                    MaterialPageRoute(builder: (context) => CreatePostPage()),
                   );
                 }
               ),

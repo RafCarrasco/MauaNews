@@ -6,7 +6,7 @@ import 'package:platform/platform.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mauanews/screens/feed.dart';
 
-final Platform platform = const LocalPlatform();
+final Platform platform = LocalPlatform();
 String _getGoogleSignInClientId() {
   if (kIsWeb) {
     return '40028629531-ufr6khkg68a99lhte5ghlroe1k0cfana.apps.googleusercontent.com';
@@ -22,7 +22,15 @@ String _getGoogleSignInClientId() {
   }
 }
 
-class AuthService {
+final FirebaseAuth _auth = FirebaseAuth.instance;
+
+class googleSignProv extends ChangeNotifier {
+
+    final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId: _getGoogleSignInClientId(),
+  );
+  GoogleSignInAccount? _user;
+
   Future<void> signInWithGoogle(BuildContext context) async {
     final GoogleSignInAccount? gUser =
         await GoogleSignIn(clientId: _getGoogleSignInClientId()).signIn();
@@ -47,21 +55,12 @@ class AuthService {
         await firestore.collection('usuarios').doc(user.email).set(us);
       }
     }
-                Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => FeedPage()),
-          );
+    Navigator.pop(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => FeedPage()),
+    );
   }
-}
-
-final FirebaseAuth _auth = FirebaseAuth.instance;
-
-class googleSignProv extends ChangeNotifier {
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    clientId: _getGoogleSignInClientId(),
-  );
-  GoogleSignInAccount? _user;
 
   GoogleSignInAccount get user => _user!;
   Future<bool> isGoogleUserAuthenticated() async {
@@ -83,77 +82,66 @@ class googleSignProv extends ChangeNotifier {
   }
 
   Future<void> checkEmailAndLoginWithGoogle(BuildContext context) async {
-      try {
-        final googleUser = await _googleSignIn.signIn();
-        final googleAuth = await googleUser!.authentication;
+    try {
+      final googleUser = await _googleSignIn.signIn();
+      final googleAuth = await googleUser!.authentication;
 
-        final googleAuthCredential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
-        );
+      final googleAuthCredential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
 
-        final UserCredential userCredential =
-            await _auth.signInWithCredential(googleAuthCredential);
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(googleAuthCredential);
 
-        if (userCredential.user != null) {
-          final isGoogleUserAu = await isGoogleUserAuthenticated();
-          if (isGoogleUserAu) {
-            // O usuário está autenticado com o Google.
-            print('Usuário autenticado com o Google');
-            Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => FeedPage()),
-            );
-          } else {
-            print('Usuário não está autenticado com o Google');
-          }
+      if (userCredential.user != null) {
+        final isGoogleUserAu = await isGoogleUserAuthenticated();
+        if (isGoogleUserAu) {
+          print(await isGoogleUserAuthenticated());
+          // O usuário está autenticado com o Google.
+          print('Usuário autenticado com o Google');
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => FeedPage()),
+          );
+        } else {
+          print('Usuário não está autenticado com o Google');
         }
-      } catch (googleSignInError) {
-        print('Erro ao fazer login com o Google: $googleSignInError');
-        // Reinicie o aplicativo em caso de erro.
       }
-    }
-
-      Future<void>loginButton(BuildContext context)async{
-              final firestore = FirebaseFirestore.instance;
-            final userDoc =
-                await firestore.collection('usuarios').doc(user.email).get();
-                if(userDoc.exists){
-                            Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => FeedPage()),
-              );
+    } catch (googleSignInError) {
+      print('Erro ao fazer login com o Google: $googleSignInError');
     }
   }
 
+
   Future<bool> isGoogle() async {
     try {
-      print("erro1");
       final googleUser = await _googleSignIn.signIn();
       final GoogleSignInAuthentication googleAuth =
           await googleUser!.authentication;
-      print("erro2");
       final AuthCredential googleAuthCredential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      print("erro3");
       final UserCredential userCredential = await FirebaseAuth.instance
           .signInWithCredential(googleAuthCredential);
-      print("erro4");
       if (userCredential.user != null) {
+
         final user = FirebaseAuth.instance.currentUser;
         if (user != null &&
             user.providerData.any((info) => info.providerId == 'google.com')) {
-          print("erro1");
-          return true; 
+          return true;
         }
       }
     } catch (e) {
       print('Erro ao verificar autenticação do usuário do Google: $e');
     }
+
     return false;
+  }
+  Future logout()async{
+    await _googleSignIn.disconnect();
+    FirebaseAuth.instance.signOut();
   }
 }
