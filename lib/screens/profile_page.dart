@@ -98,7 +98,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 provider.logout();
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
                 );
                 },
               ),
@@ -232,8 +232,7 @@ class _ProfilePageState extends State<ProfilePage> {
           return StreamBuilder(
             stream: FirebaseFirestore.instance
                 .collection('userPosts')
-                .where('userId', isEqualTo: currentUser.uid) //O ERRO È QUE ELE NÂO PUXA AS IMAGENS DO FIREBASE, FICANDO COM A TELA VAZIA, NÂO CONSIGO USAR O ORDERBY
-                .orderBy('dataPost', descending: true) //POR ALGUM MOTIVO ELE NÂO PUXA AS IMAGENS DO BANCO, DEIXANDO A TELA VAZIA, NÂO IMPRIME ERROS NO CONSOLE
+                .where('userId', isEqualTo: currentUser.uid) 
                 .snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
@@ -253,7 +252,7 @@ class _ProfilePageState extends State<ProfilePage> {
             },
           );
         } else {
-          return Center(
+          return const Center(
             child: Text('Posts Favoritos'),
           );
         }

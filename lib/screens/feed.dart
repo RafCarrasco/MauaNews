@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mauanews/screens/create_post_page.dart';
 import 'package:mauanews/screens/profile_page.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../components/custom_icon_button.dart';
 import '../utils/colors.dart';
@@ -12,7 +12,8 @@ class FeedPage extends StatelessWidget {
 
   final user = FirebaseAuth.instance.currentUser!;
   final firestore = FirebaseFirestore.instance;
-  final postsCollection = 'userPosts';
+  final userPostsCollection = 'userPosts';
+  final usersCollection = 'usuarios';
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +43,7 @@ class FeedPage extends StatelessWidget {
 
   Widget _buildPosts() {
     return StreamBuilder<QuerySnapshot>(
-      stream: firestore.collection(postsCollection).snapshots(),
+      stream: firestore.collection(userPostsCollection).snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
@@ -59,23 +60,18 @@ class FeedPage extends StatelessWidget {
           itemBuilder: (context, index) {
             final postSnapshot = posts[index];
             final post = postSnapshot.data() as Map<String, dynamic>;
-            final imageUrl = post['imageUrl'];
-            final caption = post['legenda'];
-            final userId = post['userId'];
+            final imageUrl = post['imageUrl'] as String;
+            final caption = post['caption'] as String;
+            final userId = post['userId'] as String;
 
-            return _buildPost(imageUrl, caption, userId); //NESTA PARTE HÀ UM ERRO COM O CAPTION E USERID, SE EU COLOCO O ORDERBY AQUI TAMBEM DA ERRO
-            //O ERRO È QUE ELE NÂO PUXA AS IMAGENS DO FIREBASE, FICANDO COM A TELA VAZIA
+            return _buildPost(imageUrl, caption, userId);
           },
         );
       },
     );
   }
 
-  Widget _buildPost(DocumentSnapshot postSnapshot) {
-    final post = postSnapshot.data() as Map<String, dynamic>;
-    final imageUrl = post['imageUrl'];
-    final caption = post['caption'];
-
+  Widget _buildPost(String imageUrl, String caption, String userId) {
     return Container(
       decoration: const BoxDecoration(
         border: Border(
@@ -95,23 +91,25 @@ class FeedPage extends StatelessWidget {
                 radius: 20,
                 backgroundImage: NetworkImage(user.photoURL ?? ''),
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               Text(
                 user.displayName ?? 'Nome do Usuário',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: const TextStyle(fontWeight: FontWeight.bold, color: textColor),
               ),
             ],
           ),
           const SizedBox(height: 10),
           Image.network(
             imageUrl,
-            width: 300,
-            height: 300,
+            width: 450,
+            height: 450,
             fit: BoxFit.cover,
           ),
           const SizedBox(height: 10),
-          Text(caption),
+          Text('$userId - $caption'),
           const SizedBox(height: 10),
+          // Aqui você pode adicionar a seção de comentários
+          // e o botão "ver mais" conforme necessário.
         ],
       ),
     );
@@ -147,10 +145,9 @@ class FeedPage extends StatelessWidget {
             color: primaryColor,
             iconSize: 32,
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => CreatePostPage(),
-                ),
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CreatePostPage()),
               );
             },
           ),
@@ -159,10 +156,9 @@ class FeedPage extends StatelessWidget {
             color: primaryColor,
             iconSize: 32,
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => ProfilePage(),
-                ),
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProfilePage()),
               );
             },
           ),
