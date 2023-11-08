@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mauanews/components/post_widget.dart';
 import 'package:mauanews/screens/create_post_page.dart';
 import 'package:mauanews/screens/profile_page.dart';
 import '../components/custom_icon_button.dart';
@@ -16,20 +17,22 @@ class FeedPage extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                  Image.asset(
-                 'assets/images/logo.png',
-                  fit: BoxFit.contain,
-                  height: 42,
-              ),
-            ]
-        )
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/images/logo.png',
+              fit: BoxFit.contain,
+              height: 42,
+            ),
+          ],
+        ),
       ),
       body: Column(
         children: [
           Expanded(
-            child: _buildPosts(),
+            child: Center(
+              child: _buildPosts(),
+            ),
           ),
           _buildFooter(context),
         ],
@@ -39,54 +42,18 @@ class FeedPage extends StatelessWidget {
 
   Widget _buildPosts() {
     return RefreshIndicator(
-      onRefresh: () async {
-      },
+      onRefresh: () async {},
       child: ListView.builder(
         itemCount: 10,
         itemBuilder: (context, index) {
-          return _buildPost();
+          // Use o widget de post importado
+          return PostWidget(
+            username: 'Nome do Usuário',
+            imageUrl: 'URL_da_foto_postada',
+            caption: 'Legenda da postagem',
+            profileImage: '',
+          );
         },
-      ),
-    );
-  }
-
-  Widget _buildPost() {
-    return Container(
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Colors.grey,
-            width: 0.5,
-          ),
-        ),
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              CircleAvatar(
-                radius: 20,
-              ),
-              SizedBox(width: 10),
-              Text(
-                'Nome do Usuário',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Image.network(
-            'URL_da_foto_postada',
-            width: 300,
-            height: 300,
-            fit: BoxFit.cover,
-          ),
-          const SizedBox(height: 10),
-          const Text('Legenda da postagem'),
-          const SizedBox(height: 10),
-        ],
       ),
     );
   }
@@ -125,7 +92,7 @@ class FeedPage extends StatelessWidget {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => ImageUploadPage(),
+                  builder: (context) => CreatePostPage(),
                 ),
               );
             },

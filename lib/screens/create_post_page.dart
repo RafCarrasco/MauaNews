@@ -7,12 +7,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mauanews/components/add_image_widget.dart';
 import 'package:mauanews/utils/colors.dart';
 
-class ImageUploadPage extends StatefulWidget {
+class CreatePostPage extends StatefulWidget {
   @override
-  _ImageUploadPageState createState() => _ImageUploadPageState();
+  _CreatePostPageState createState() => _CreatePostPageState();
 }
 
-class _ImageUploadPageState extends State<ImageUploadPage> {
+class _CreatePostPageState extends State<CreatePostPage> {
   File? imageFile;
   final picker = ImagePicker();
   final _storage = FirebaseStorage.instance;
