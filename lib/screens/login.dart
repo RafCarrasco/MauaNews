@@ -218,7 +218,7 @@ class _LoginPageState extends State<LoginPage> {
                         onTap: () async {
                           final provider = Provider.of<googleSignProv>(context,
                               listen: false);
-                          print(provider.isGoogle());
+                          provider.isGoogle(context);
                         },
                         imagePath: "assets/images/google.png",
                       ),

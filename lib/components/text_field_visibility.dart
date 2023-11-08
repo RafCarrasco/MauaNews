@@ -32,6 +32,7 @@ class _MyTextFieldWithVisibilityState extends State<MyTextFieldWithVisibility> {
       padding: const EdgeInsets.symmetric(horizontal: 25.0),
       child: TextField(
         style: const TextStyle(color: secondTextColor),
+        cursorColor: secondTextColor,
         controller: widget.controller,
         obscureText: !_passwordVisible,
         decoration: InputDecoration(

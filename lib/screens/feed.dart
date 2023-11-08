@@ -39,37 +39,40 @@ class FeedPage extends StatelessWidget {
       ),
     );
   }
+Widget _buildPosts() {
+  return StreamBuilder<QuerySnapshot>(
+    stream: firestore.collection(postsCollection).orderBy('timestamp', descending: true).snapshots(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return Center(child: CircularProgressIndicator());
+      }
 
-  Widget _buildPosts() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: firestore.collection(postsCollection).snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        }
+      if (!snapshot.hasData) {
+        return Center(child: Text('Sem posts disponíveis.'));
+      }
 
-        if (!snapshot.hasData) {
-          return Center(child: Text('Sem posts disponíveis.'));
-        }
+      final posts = snapshot.data!.docs;
 
-        final posts = snapshot.data!.docs;
+      return ListView.builder(
+        itemCount: posts.length,
+        itemBuilder: (context, index) {
+          final postSnapshot = posts[index];
+          final post = postSnapshot.data() as Map<String, dynamic>;
+          final imageUrl = post['imageUrl'];
+          final caption = post['caption'];
+          final userId = post['userId'];
 
-        return ListView.builder(
-          itemCount: posts.length,
-          itemBuilder: (context, index) {
-            final postSnapshot = posts[index];
-            final post = postSnapshot.data() as Map<String, dynamic>;
-            final imageUrl = post['imageUrl'];
-            final caption = post['legenda'];
-            final userId = post['userId'];
+          // Certifique-se de que imageUrl seja uma URL válida da imagem.
+          // Você pode usar uma biblioteca como cached_network_image para carregar imagens a partir de URLs.
+          // Certifique-se de importar a biblioteca e adicionar ao seu pubspec.yaml.
+          // Exemplo: https://pub.dev/packages/cached_network_image
+          return _buildPost(imageUrl);
+        },
+      );
+    },
+  );
+}
 
-            return _buildPost(imageUrl, caption, userId); //NESTA PARTE HÀ UM ERRO COM O CAPTION E USERID, SE EU COLOCO O ORDERBY AQUI TAMBEM DA ERRO
-            //O ERRO È QUE ELE NÂO PUXA AS IMAGENS DO FIREBASE, FICANDO COM A TELA VAZIA
-          },
-        );
-      },
-    );
-  }
 
   Widget _buildPost(DocumentSnapshot postSnapshot) {
     final post = postSnapshot.data() as Map<String, dynamic>;

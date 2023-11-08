@@ -19,7 +19,8 @@ class MyTextField extends StatelessWidget {
       width: 450,
       padding: const EdgeInsets.symmetric(horizontal: 25.0),
       child: TextField(
-        style: const TextStyle(color: secondTextColor),
+        style: const TextStyle(color:secondTextColor),
+        cursorColor: secondTextColor,
         controller: controller,
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
