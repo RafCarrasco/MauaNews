@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mauanews/components/post_widget.dart';
 import 'package:mauanews/screens/create_post_page.dart';
 import 'package:mauanews/screens/profile_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../components/custom_icon_button.dart';
 import '../utils/colors.dart';
 

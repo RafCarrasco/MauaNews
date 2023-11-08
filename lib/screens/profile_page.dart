@@ -47,8 +47,8 @@ class _ProfilePageState extends State<ProfilePage> {
       if (snapshot.exists) {
         setState(() {
           var data = snapshot.data() as List<Map<String, dynamic>>;
-          data.sort('timestamp');
-          userData = data;
+          // data.sort('timestamp');
+          // userData = data;
         });
       }
     });

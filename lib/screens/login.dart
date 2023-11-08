@@ -10,6 +10,7 @@ import 'package:mauanews/screens/recover_password.dart';
 import 'package:mauanews/screens/sign_up.dart';
 // import 'package:mauanews/services/auth_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mauanews/services/auth_service.dart';
 import 'package:mauanews/utils/colors.dart';
 
 class LoginPage extends StatefulWidget {
@@ -264,7 +265,7 @@ class _LoginPageState extends State<LoginPage> {
                     children: [
                       ImagensLogin(
                         onTap: () async {
-                          signInWithGoogle();
+                        googleSignProv().isGoogle(context);
                         },
                         imagePath: "assets/images/google.png",
                       ),
