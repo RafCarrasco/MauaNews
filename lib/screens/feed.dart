@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mauanews/screens/create_post_page.dart';
 import 'package:mauanews/screens/profile_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mauanews/screens/search.dart';
 
 import '../components/custom_icon_button.dart';
 import '../utils/colors.dart';
@@ -39,40 +40,43 @@ class FeedPage extends StatelessWidget {
       ),
     );
   }
-Widget _buildPosts() {
-  return StreamBuilder<QuerySnapshot>(
-    stream: firestore.collection(postsCollection).orderBy('timestamp', descending: true).snapshots(),
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return Center(child: CircularProgressIndicator());
-      }
 
-      if (!snapshot.hasData) {
-        return Center(child: Text('Sem posts disponíveis.'));
-      }
+  Widget _buildPosts() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: firestore
+          .collection(postsCollection)
+          .orderBy('timestamp', descending: true)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
 
-      final posts = snapshot.data!.docs;
+        if (!snapshot.hasData) {
+          return Center(child: Text('Sem posts disponíveis.'));
+        }
 
-      return ListView.builder(
-        itemCount: posts.length,
-        itemBuilder: (context, index) {
-          final postSnapshot = posts[index];
-          final post = postSnapshot.data() as Map<String, dynamic>;
-          final imageUrl = post['imageUrl'];
-          final caption = post['caption'];
-          final userId = post['userId'];
+        final posts = snapshot.data!.docs;
 
-          // Certifique-se de que imageUrl seja uma URL válida da imagem.
-          // Você pode usar uma biblioteca como cached_network_image para carregar imagens a partir de URLs.
-          // Certifique-se de importar a biblioteca e adicionar ao seu pubspec.yaml.
-          // Exemplo: https://pub.dev/packages/cached_network_image
-          return _buildPost(imageUrl);
-        },
-      );
-    },
-  );
-}
+        return ListView.builder(
+          itemCount: posts.length,
+          itemBuilder: (context, index) {
+            final postSnapshot = posts[index];
+            final post = postSnapshot.data() as Map<String, dynamic>;
+            final imageUrl = post['imageUrl'];
+            final caption = post['caption'];
+            final userId = post['userId'];
 
+            // Certifique-se de que imageUrl seja uma URL válida da imagem.
+            // Você pode usar uma biblioteca como cached_network_image para carregar imagens a partir de URLs.
+            // Certifique-se de importar a biblioteca e adicionar ao seu pubspec.yaml.
+            // Exemplo: https://pub.dev/packages/cached_network_image
+            return _buildPost(imageUrl);
+          },
+        );
+      },
+    );
+  }
 
   Widget _buildPost(DocumentSnapshot postSnapshot) {
     final post = postSnapshot.data() as Map<String, dynamic>;
@@ -143,7 +147,13 @@ Widget _buildPosts() {
             icon: Icons.search,
             color: primaryColor,
             iconSize: 32,
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => SearchBarApp(),
+                ),
+              );
+            },
           ),
           CustomIconButton(
             icon: Icons.add_circle_outline_rounded,
