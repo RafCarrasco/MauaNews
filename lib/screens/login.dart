@@ -219,6 +219,31 @@ class _LoginPageState extends State<LoginPage> {
                           final provider = Provider.of<googleSignProv>(context,
                               listen: false);
                           provider.isGoogle(context);
+
+                          final firestore = FirebaseFirestore.instance;
+
+                          
+
+                            final user = FirebaseAuth.instance.currentUser;
+                            if (user != null) {
+                              final userDoc =
+                                  await firestore.collection('usuarios').doc(user.uid).get();
+                              if (!userDoc.exists) {
+                                final us = {
+                                  'email': emailController.text,
+                                  'username': emailController.text.split('@')[0],
+                                  'bio' : 'Biografia vazia...'
+                                };
+                                await firestore.collection('usuarios').doc(user.uid).set(us);
+                              }
+                                Navigator.pop(context);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => FeedPage()),
+                                );
+                            }
+                          
+
                         },
                         imagePath: "assets/images/google.png",
                       ),

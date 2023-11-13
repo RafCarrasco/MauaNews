@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:mauanews/utils/colors.dart';
 
 class MyTextBox extends StatelessWidget {
   final String text;
-  final String sectionName;
 
   const MyTextBox({
     super.key,
     required this.text, 
-    required this.sectionName
   });
 
   @override
@@ -15,8 +14,9 @@ class MyTextBox extends StatelessWidget {
     return Container(
       child: Column(
         children: [
-          Text(sectionName),
-          Text(text)
+          Text(text, 
+            style: TextStyle(color: textColor, fontSize: 18),
+          )
         ],
       ),
     );

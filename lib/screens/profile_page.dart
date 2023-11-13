@@ -11,6 +11,7 @@ import 'package:mauanews/services/auth_service.dart';
 import 'package:mauanews/utils/colors.dart';
 import 'package:provider/provider.dart';
 
+
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key? key});
 
@@ -19,7 +20,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final currentUser = FirebaseAuth.instance.currentUser!;
+  final user = FirebaseAuth.instance.currentUser!;
   Map<String, dynamic>? userData;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -41,7 +42,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     FirebaseFirestore.instance
         .collection('usuarios')
-        .doc(currentUser.email)
+        .doc(user.email)
         .get()
         .then((snapshot) {
       if (snapshot.exists) {
@@ -114,7 +115,10 @@ class _ProfilePageState extends State<ProfilePage> {
       key: _scaffoldKey,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text(userData?['username'] ?? 'Nome do Usuário'),
+        title: user.displayName != null ?
+        Text(user.displayName ?? 'Nome do Usuário')
+        :
+        Text(userData?['username'] ?? 'Nome do Usuário'),
         actions: [
           IconButton(
             icon: const Icon(Icons.menu),
@@ -125,7 +129,7 @@ class _ProfilePageState extends State<ProfilePage> {
       body: Column(
         children: [
           StreamBuilder<DocumentSnapshot>(
-            stream: FirebaseFirestore.instance.collection('usuarios').doc(currentUser.email).snapshots(),
+            stream: FirebaseFirestore.instance.collection('usuarios').doc(user.uid).snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data!.data() != null) {
                 final userData = snapshot.data!.data() as Map<String, dynamic>;
@@ -135,18 +139,25 @@ class _ProfilePageState extends State<ProfilePage> {
                     Column(
                       children: [
                         const SizedBox(height: 10),
+                        user.photoURL != null ?
                         CircleAvatar(
-                          radius: 50,
-                          backgroundImage: NetworkImage(currentUser.photoURL ?? ''),
+                          radius: 65,
+                          backgroundImage: NetworkImage(user.photoURL ?? ''),
+                        )
+                        :
+                        CircleAvatar(
+                          radius: 65,
+                          backgroundColor: Colors.transparent,
+                          child: ClipRRect(
+                            child: Image.asset("assets/images/user_avatar.png"),
+                          )
                         ),
                         const SizedBox(height: 8),
                         MyTextBox(
                           text: userData['username'],
-                          sectionName: "Nome de Usuário",
                         ),
                         MyTextBox(
                           text: userData['bio'],
-                          sectionName: "Biografia",
                         ),
                       ],
                       )
@@ -232,7 +243,7 @@ class _ProfilePageState extends State<ProfilePage> {
           return StreamBuilder(
             stream: FirebaseFirestore.instance
                 .collection('userPosts')
-                .where('userId', isEqualTo: currentUser.uid) //O ERRO È QUE ELE NÂO PUXA AS IMAGENS DO FIREBASE, FICANDO COM A TELA VAZIA, NÂO CONSIGO USAR O ORDERBY
+                .where('userId', isEqualTo: user.uid) //O ERRO È QUE ELE NÂO PUXA AS IMAGENS DO FIREBASE, FICANDO COM A TELA VAZIA, NÂO CONSIGO USAR O ORDERBY
                 .orderBy('dataPost', descending: true) //POR ALGUM MOTIVO ELE NÂO PUXA AS IMAGENS DO BANCO, DEIXANDO A TELA VAZIA, NÂO IMPRIME ERROS NO CONSOLE
                 .snapshots(),
             builder: (context, snapshot) {
@@ -328,4 +339,3 @@ class _ProfilePageState extends State<ProfilePage> {
       }
     
   
-
