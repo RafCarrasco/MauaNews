@@ -76,4 +76,12 @@ class googleSignProv extends ChangeNotifier {
     await googleSignIn.disconnect();
     FirebaseAuth.instance.signOut();
   }
+  
+  void resetPassword(BuildContext context,String email)async{
+    try{
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    }catch (e){
+      print('Error $e');
+    }
+  }
 }

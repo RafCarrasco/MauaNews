@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mauanews/components/button_widget.dart';
 import 'package:mauanews/components/text_field.dart';
+import 'package:mauanews/services/auth_service.dart';
 import 'package:mauanews/utils/colors.dart';
 
 class RecoverPassword extends StatelessWidget {
@@ -74,10 +75,8 @@ class RecoverPassword extends StatelessWidget {
                     ButtonWidget(
                       text: "Enviar",
                       onTap: (){
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => RecoverPassword()),
-                        );
+                        final recuperarSenha=googleSignProv();
+                        recuperarSenha.resetPassword(context, emailController.text);
                       },
                     ),
 
