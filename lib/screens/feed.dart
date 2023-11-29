@@ -60,65 +60,58 @@ Widget _buildPosts() {
           final post = postSnapshot.data() as Map<String, dynamic>;
           final imageUrl = post['imageUrl'];
           final caption = post['caption'];
-          final userId = post['userId'];
 
-          // Certifique-se de que imageUrl seja uma URL válida da imagem.
-          // Você pode usar uma biblioteca como cached_network_image para carregar imagens a partir de URLs.
-          // Certifique-se de importar a biblioteca e adicionar ao seu pubspec.yaml.
-          // Exemplo: https://pub.dev/packages/cached_network_image
-          return _buildPost(imageUrl);
+          return _buildPost(imageUrl, caption);
         },
       );
     },
   );
 }
 
-
-  Widget _buildPost(DocumentSnapshot postSnapshot) {
-    final post = postSnapshot.data() as Map<String, dynamic>;
-    final imageUrl = post['imageUrl'];
-    final caption = post['caption'];
-
-    return Container(
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Colors.grey,
-            width: 0.5,
-          ),
+Widget _buildPost(String imageUrl, String caption) {
+  print('URL da Imagem: $imageUrl');
+  print('Legenda: $caption');
+  return Container(
+    decoration: const BoxDecoration(
+      border: Border(
+        bottom: BorderSide(
+          color: Colors.grey,
+          width: 0.5,
         ),
       ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundImage: NetworkImage(user.photoURL ?? ''),
-              ),
-              SizedBox(width: 10),
-              Text(
-                user.displayName ?? 'Nome do Usuário',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Image.network(
-            imageUrl,
-            width: 300,
-            height: 300,
-            fit: BoxFit.cover,
-          ),
-          const SizedBox(height: 10),
-          Text(caption),
-          const SizedBox(height: 10),
-        ],
-      ),
-    );
-  }
+    ),
+    padding: const EdgeInsets.all(16),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            CircleAvatar(
+              radius: 20,
+              backgroundImage: NetworkImage(user.photoURL ?? ''),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              user.displayName ?? 'Nome do Usuário',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Image.network(
+          imageUrl,
+          width: 300,
+          height: 300,
+          fit: BoxFit.cover,
+        ),
+        const SizedBox(height: 10),
+        Text(caption),
+        const SizedBox(height: 10),
+      ],
+    ),
+  );
+}
+
 
   Widget _buildFooter(BuildContext context) {
     return Container(

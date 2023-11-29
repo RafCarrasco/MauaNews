@@ -40,17 +40,31 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
 
-    FirebaseFirestore.instance
-        .collection('usuarios')
-        .doc(user.email)
-        .get()
-        .then((snapshot) {
-      if (snapshot.exists) {
-        setState(() {
-          userData = snapshot.data() as Map<String, dynamic>;
-        });
-      }
-    });
+    if (user.providerData[0].providerId == 'password') {
+      FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(user.uid)
+          .get()
+          .then((snapshot) {
+        if (snapshot.exists) {
+          setState(() {
+            userData = snapshot.data() as Map<String, dynamic>;
+          });
+        }
+      });
+    } else {
+      FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(user.email)
+          .get()
+          .then((snapshot) {
+        if (snapshot.exists) {
+          setState(() {
+            userData = snapshot.data() as Map<String, dynamic>;
+          });
+        }
+      });
+    }
   }
 
   void _openDrawer() {
@@ -155,9 +169,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         const SizedBox(height: 8),
                         MyTextBox(
                           text: userData['username'],
+                          isBold: true,
                         ),
                         MyTextBox(
                           text: userData['bio'],
+                          isBold: false,
                         ),
                       ],
                       )
@@ -230,9 +246,6 @@ class _ProfilePageState extends State<ProfilePage> {
           SizedBox(
             height: 6,
           ),
-          Text('Seguidores: 100'),
-          SizedBox(width: 20),
-          Text('Seguindo: 50'),
           SizedBox(height: 10),
         ]
       );
@@ -243,8 +256,8 @@ class _ProfilePageState extends State<ProfilePage> {
           return StreamBuilder(
             stream: FirebaseFirestore.instance
                 .collection('userPosts')
-                .where('userId', isEqualTo: user.uid) //O ERRO È QUE ELE NÂO PUXA AS IMAGENS DO FIREBASE, FICANDO COM A TELA VAZIA, NÂO CONSIGO USAR O ORDERBY
-                .orderBy('dataPost', descending: true) //POR ALGUM MOTIVO ELE NÂO PUXA AS IMAGENS DO BANCO, DEIXANDO A TELA VAZIA, NÂO IMPRIME ERROS NO CONSOLE
+                .where('userId', isEqualTo: user.uid) 
+                .orderBy('dataPost', descending: true)
                 .snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {

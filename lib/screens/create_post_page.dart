@@ -76,7 +76,6 @@ class _CreatePostPageState extends State<CreatePostPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
         title: const Text('Nova publicação'),
       ),
       body: Center(
@@ -100,7 +99,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: uploadImageToFirebase,
-                  child: Text('Enviar Imagem'),
+                  child: const Text('Enviar Imagem'),
                 ),
               ],
             ] else ...[

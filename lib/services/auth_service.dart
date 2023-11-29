@@ -17,7 +17,6 @@ String _getGoogleSignInClientId() {
   //   return 'YOUR_IOS_CLIENT_ID';
   // }
   else {
-    // Defina um valor padrão para outras plataformas (se necessário).
     return '';
   }
 }

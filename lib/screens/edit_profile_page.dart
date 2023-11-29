@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mauanews/components/button_widget.dart';
 import 'package:mauanews/components/edit_textfield.dart';
-import 'package:mauanews/components/text_field.dart';
 import 'package:mauanews/screens/login.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mauanews/utils/colors.dart';
@@ -26,7 +25,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
   String imageUrl = '';
   bool isImageDisplayed = false;
 
-  void selectImage() async{
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _bioController = TextEditingController();
+
+  void selectImage() async {
     Uint8List img = await pickImage(ImageSource.gallery);
     setState(() {
       _image = img;
@@ -46,14 +48,38 @@ class _EditProfilePageState extends State<EditProfilePage> {
     try {
       XFile? file =
           await picker.pickImage(source: ImageSource.gallery, imageQuality: 90);
-      if (file != null)
+      if (file != null) {
         setState(() {
           photo?.readAsBytes();
           photo = file;
           isImageDisplayed = true;
         });
+      }
     } catch (e) {
       print(e);
+    }
+  }
+
+  void _updateUserProfile(String username,String bio) async {
+    try {
+      await FirebaseFirestore.instance.collection('usuarios').doc(user.uid).update({
+        'username': username,
+        'bio': bio,
+      });
+
+      setState(() {
+        userData?['username'] = username;
+        userData?['bio'] = bio;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Perfil atualizado com sucesso!')),
+      );
+    } catch (error) {
+      print('Erro ao atualizar perfil: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Erro ao atualizar perfil. Tente novamente!')),
+      );
     }
   }
 
@@ -70,18 +96,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Scaffold(
       appBar: AppBar(
         leading: null,
-        title: user.displayName != null ?
-        Text(user.displayName ?? 'Nome do Usuário')
-        :
-        Text(userData?['username'] ?? 'Nome do Usuário'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.exit_to_app),
-            onPressed: () {
-              signUserOut(context);
-            },
-          ),
-        ],
+        title: const Text("Editar o perfil"),
       ),
       body: Column(
         children: [
@@ -95,38 +110,38 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   children: [
                     Column(
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Stack(
                           children: [
                             const SizedBox(height: 10),
-                        _image != null ?
-                        CircleAvatar(
-                          radius: 65,
-                          backgroundImage: MemoryImage(_image!),
-                        )
-                        : user.photoURL != null ?
-                        CircleAvatar(
-                          radius: 65,
-                          backgroundImage: NetworkImage(user.photoURL ?? ''),
-                        )
-                        :
-                        CircleAvatar(
-                          radius: 65,
-                          backgroundColor: Colors.transparent,
-                          child: ClipRRect(
-                            child: Image.asset("assets/images/user_avatar.png"),
-                          )
-                        ),
+                            _image != null ?
+                            CircleAvatar(
+                              radius: 65,
+                              backgroundImage: MemoryImage(_image!),
+                            )
+                            : user.photoURL != null ?
+                            CircleAvatar(
+                              radius: 65,
+                              backgroundImage: NetworkImage(user.photoURL ?? ''),
+                            )
+                            :
+                            CircleAvatar(
+                              radius: 65,
+                              backgroundColor: Colors.transparent,
+                              child: ClipRRect(
+                                child: Image.asset("assets/images/user_avatar.png"),
+                              )
+                            ),
                             Positioned(
+                              bottom: -10,
+                              left: 90,
                               child: IconButton(
                                 onPressed: selectImage,
                                 color: primaryColor,
                                 icon: const Icon(Icons.add_a_photo_sharp, color: Colors.blue),
                               ),
-                              bottom: -10,
-                              left: 90,
                             )
                           ],
                         ),
@@ -134,18 +149,24 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         EditTextFieldWidget(
                           label: 'Nome',
                           text: userData['username'],
-                          onChanged: (name) {},
+                          controller: _usernameController,
+                          onChanged: (name) {
+                            _usernameController.text = name;
+                          },
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 15,
                         ),
                         EditTextFieldWidget(
                           label: 'Biografia',
                           text: userData['bio'],
-                          onChanged: (about) {},
+                          controller: _bioController,
+                          onChanged: (about) {
+                            _bioController.text = about;
+                          },
                         ), 
-                        SizedBox(height: 120,), 
-                        ButtonWidget(onTap: () {  }, text: 'Salvar',)                    
+                        const SizedBox(height: 120,), 
+                        ButtonWidget(onTap:() {_updateUserProfile(_usernameController.text,_bioController.text);}, text: 'Salvar',)                    
                       ],
                     )
                   ],

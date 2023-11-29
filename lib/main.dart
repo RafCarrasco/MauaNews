@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {  
     return ChangeNotifierProvider(
-      create: (context) => googleSignProv(), // Substitua 'SeuChangeNotifier' pelo nome da sua classe ChangeNotifier.   
+      create: (context) => googleSignProv(),   
     child: MaterialApp(
       debugShowCheckedModeBanner: false,
       home: const AuthPage(),
