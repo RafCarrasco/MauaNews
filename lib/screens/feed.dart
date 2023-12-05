@@ -64,6 +64,7 @@ class _FeedPageState extends State<FeedPage> {
               profileImage: post['profileImage'] ?? '',
               postId: posts[index].id, // Passa o ID do post
               caption: post['caption'] ?? '',
+              imageUrl: post['imageUrl'], 
             );
           },
         );

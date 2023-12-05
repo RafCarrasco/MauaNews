@@ -5,8 +5,9 @@ class PostWidget extends StatelessWidget {
   final String userId;
   final String username;
   final String profileImage;
-  final String postId; // Adicionei o campo do postId para recuperar os detalhes do post no Firestore
+  final String postId;
   final String caption;
+  final String imageUrl;
 
   PostWidget({
     required this.userId,
@@ -14,6 +15,7 @@ class PostWidget extends StatelessWidget {
     required this.profileImage,
     required this.postId,
     required this.caption,
+    required this.imageUrl,
   });
 
   @override
@@ -69,7 +71,7 @@ class PostWidget extends StatelessWidget {
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: FirebaseFirestore.instance
           .collection('userPosts')
-          .where('userId', isEqualTo: userId)
+          .where('imageUrl', isEqualTo: imageUrl)
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
@@ -96,8 +98,8 @@ class PostWidget extends StatelessWidget {
 
     return Image.network(
       imageUrl,
-      width: double.infinity,
-      height: 200,
+      width: 500,
+      height: 500,
       fit: BoxFit.cover,
     );
   }
