@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:mauanews/utils/colors.dart';
 
 class EditTextFieldWidget extends StatefulWidget {
+    final TextEditingController controller;
   final String label;
   final String text;
   final ValueChanged<String> onChanged;
 
   const EditTextFieldWidget({
     Key? key,
+    required this.controller,
     required this.label,
     required this.text,
     required this.onChanged
@@ -32,22 +35,39 @@ class _EditTextFieldWidgetState extends State<EditTextFieldWidget> {
   }
 
   @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        widget.label,
-        style: TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
+  Widget build(BuildContext context){
+    return Container(
+      width: 450,
+      padding: const EdgeInsets.symmetric(horizontal: 25.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            widget.label,
+            style: const TextStyle(color: textColor,fontWeight: FontWeight.normal, fontSize: 16),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            style: const TextStyle(color:secondTextColor),
+            cursorColor: secondTextColor,
+            controller: widget.controller,
+            decoration: const InputDecoration(
+            contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: textBoxes),
+              borderRadius: BorderRadius.all(Radius.circular(15)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: textBoxes),
+              borderRadius: BorderRadius.all(Radius.circular(15)),
+            ),
+            fillColor: textBoxes,
+            filled: true,
+            hintStyle: TextStyle(color: secondTextColor),
+          ),
+          ),
+        ],
       ),
-      SizedBox(height: 8),
-      TextField(
-        controller: controller,
-        decoration: InputDecoration(
-        border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-          ),  
-        ),
-      ),
-    ],
-  );
+    );
+  }
 }

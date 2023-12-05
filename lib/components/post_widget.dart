@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class PostWidget extends StatelessWidget {
   final String username;
   final String profileImage;
-  final String imageUrl;
+  final Image imageUrl;
   final String caption;
 
   PostWidget({
@@ -43,7 +43,7 @@ class PostWidget extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Image.network(
-            imageUrl,
+            imageUrl.toString(),
             width: 300,
             height: 300,
             fit: BoxFit.cover,

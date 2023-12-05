@@ -11,6 +11,7 @@ import 'package:mauanews/services/auth_service.dart';
 import 'package:mauanews/utils/colors.dart';
 import 'package:provider/provider.dart';
 
+
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key? key});
 
@@ -19,7 +20,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final currentUser = FirebaseAuth.instance.currentUser!;
+  final user = FirebaseAuth.instance.currentUser!;
   Map<String, dynamic>? userData;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -39,19 +40,31 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
 
-    FirebaseFirestore.instance
-        .collection('usuarios')
-        .doc(currentUser.email)
-        .get()
-        .then((snapshot) {
-      if (snapshot.exists) {
-        setState(() {
-          var data = snapshot.data() as List<Map<String, dynamic>>;
-          // data.sort('timestamp');
-          // userData = data;
-        });
-      }
-    });
+    if (user.providerData[0].providerId == 'password') {
+      FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(user.uid)
+          .get()
+          .then((snapshot) {
+        if (snapshot.exists) {
+          setState(() {
+            userData = snapshot.data() as Map<String, dynamic>;
+          });
+        }
+      });
+    } else {
+      FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(user.email)
+          .get()
+          .then((snapshot) {
+        if (snapshot.exists) {
+          setState(() {
+            userData = snapshot.data() as Map<String, dynamic>;
+          });
+        }
+      });
+    }
   }
 
   void _openDrawer() {
@@ -100,7 +113,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 provider.logout();
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                  MaterialPageRoute(builder: (context) => LoginPage()),
                 );
                 },
               ),
@@ -116,7 +129,10 @@ class _ProfilePageState extends State<ProfilePage> {
       key: _scaffoldKey,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text(userData?['username'] ?? 'Nome do Usuário'),
+        title: user.displayName != null ?
+        Text(user.displayName ?? 'Nome do Usuário')
+        :
+        Text(userData?['username'] ?? 'Nome do Usuário'),
         actions: [
           IconButton(
             icon: const Icon(Icons.menu),
@@ -127,7 +143,7 @@ class _ProfilePageState extends State<ProfilePage> {
       body: Column(
         children: [
           StreamBuilder<DocumentSnapshot>(
-            stream: FirebaseFirestore.instance.collection('usuarios').doc(currentUser.email).snapshots(),
+            stream: FirebaseFirestore.instance.collection('usuarios').doc(user.uid).snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data!.data() != null) {
                 final userData = snapshot.data!.data() as Map<String, dynamic>;
@@ -137,18 +153,27 @@ class _ProfilePageState extends State<ProfilePage> {
                     Column(
                       children: [
                         const SizedBox(height: 10),
+                        user.photoURL != null ?
                         CircleAvatar(
-                          radius: 50,
-                          backgroundImage: NetworkImage(currentUser.photoURL ?? ''),
+                          radius: 65,
+                          backgroundImage: NetworkImage(user.photoURL ?? ''),
+                        )
+                        :
+                        CircleAvatar(
+                          radius: 65,
+                          backgroundColor: Colors.transparent,
+                          child: ClipRRect(
+                            child: Image.asset("assets/images/user_avatar.png"),
+                          )
                         ),
                         const SizedBox(height: 8),
                         MyTextBox(
                           text: userData['username'],
-                          sectionName: "Nome de Usuário",
+                          isBold: true,
                         ),
                         MyTextBox(
                           text: userData['bio'],
-                          sectionName: "Biografia",
+                          isBold: false,
                         ),
                       ],
                       )
@@ -221,9 +246,6 @@ class _ProfilePageState extends State<ProfilePage> {
           SizedBox(
             height: 6,
           ),
-          Text('Seguidores: 100'),
-          SizedBox(width: 20),
-          Text('Seguindo: 50'),
           SizedBox(height: 10),
         ]
       );
@@ -234,7 +256,8 @@ class _ProfilePageState extends State<ProfilePage> {
           return StreamBuilder(
             stream: FirebaseFirestore.instance
                 .collection('userPosts')
-                .where('userId', isEqualTo: currentUser.uid) 
+                .where('userId', isEqualTo: user.uid) 
+                .orderBy('dataPost', descending: true)
                 .snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
@@ -254,7 +277,7 @@ class _ProfilePageState extends State<ProfilePage> {
             },
           );
         } else {
-          return const Center(
+          return Center(
             child: Text('Posts Favoritos'),
           );
         }

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mauanews/components/post_widget.dart';
@@ -7,41 +8,41 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../components/custom_icon_button.dart';
 import '../utils/colors.dart';
 
-class FeedPage extends StatelessWidget {
-  FeedPage({Key? key});
-
-  final user = FirebaseAuth.instance.currentUser!;
+class FeedPage extends StatefulWidget {
+  FeedPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/images/logo.png',
-              fit: BoxFit.contain,
-              height: 42,
-            ),
-          ],
-        ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Center(
-              child: _buildPosts(),
-            ),
-          ),
-          _buildFooter(context),
-        ],
-      ),
-    );
-  }
+  _FeedPageState createState() => _FeedPageState();
+}
 
-  Widget _buildPosts() {
+class _FeedPageState extends State<FeedPage> {
+  File? imageFile;
+  final user = FirebaseAuth.instance.currentUser!;
+
+ void getFieldValue() async {
+  // 1. Obtenha uma referência para o documento
+  DocumentReference docRef = FirebaseFirestore.instance.collection('userPosts').doc('R1rNt4foGI4oHENOyU1F');
+
+  try {
+    // 2. Obtenha o DocumentSnapshot associado a esse documento
+    DocumentSnapshot docSnapshot = await docRef.get();
+
+    // 3. Acesse o campo específico usando data()
+    if (docSnapshot.exists) {
+       Map<String, dynamic>? data = docSnapshot.data() as Map<String, dynamic>?;
+      if(data!=null){
+        imageFile=data['imageUrl'];
+        print('-----------------------');
+        print(imageFile);
+      }
+    } else {
+      print('Documento não encontrado');
+    }
+  } catch (e) {
+    print('Erro ao obter valor do campo: $e');
+  }
+}
+   Widget _buildPosts() {
     return RefreshIndicator(
       onRefresh: () async {},
       child: ListView.builder(
@@ -50,7 +51,7 @@ class FeedPage extends StatelessWidget {
           // Use o widget de post importado
           return PostWidget(
             username: 'Nome do Usuário',
-            imageUrl: 'URL_da_foto_postada',
+            imageUrl: Image.network(imageFile.toString()),
             caption: 'Legenda da postagem',
             profileImage: '',
           );
@@ -114,4 +115,38 @@ class FeedPage extends StatelessWidget {
       ),
     );
   }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/images/logo.png',
+              fit: BoxFit.contain,
+              height: 42,
+            ),
+          ],
+        ),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: Center(
+              child: _buildPosts(),
+            ),
+          ),
+          _buildFooter(context),
+        ],
+      ),
+    );
+  }
 }
+
+
+ 
+
