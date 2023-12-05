@@ -180,7 +180,6 @@ class _LoginPageState extends State<LoginPage> {
                     obscureText: true,
                     icon: const Icon(Icons.lock_outlined, size: 20, color: Colors.grey),
                     onPasswordVisibilityChanged: (bool isVisible) {
-                      // Faça algo com o estado da visibilidade da senha
                     },
                   ),
 

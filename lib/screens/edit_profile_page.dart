@@ -5,9 +5,9 @@ import 'package:mauanews/components/button_widget.dart';
 import 'package:mauanews/components/edit_textfield.dart';
 import 'package:mauanews/screens/login.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mauanews/screens/profile_page.dart';
 import 'package:mauanews/utils/colors.dart';
 import 'dart:typed_data';
-import 'package:image_picker/image_picker.dart';
 
 class EditProfilePage extends StatefulWidget {
   EditProfilePage({Key? key});
@@ -167,7 +167,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           },
                         ), 
                         const SizedBox(height: 120,), 
-                        ButtonWidget(onTap:() {_updateUserProfile(_usernameController.text,_bioController.text);}, text: 'Salvar',)                    
+                        ButtonWidget(onTap:() {
+                          _updateUserProfile(_usernameController.text,_bioController.text);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => ProfilePage()),
+                          );
+                        }, 
+                        text: 'Salvar', )                    
                       ],
                     )
                   ],

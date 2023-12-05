@@ -9,7 +9,6 @@ import 'package:mauanews/screens/feed.dart';
 import 'package:mauanews/screens/login.dart';
 import 'package:mauanews/services/auth_service.dart';
 import 'package:mauanews/utils/colors.dart';
-import 'package:provider/provider.dart';
 
 
 class ProfilePage extends StatefulWidget {
@@ -108,12 +107,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 onTap: () {
-                  final provider =
-                    Provider.of<googleSignProv>(context, listen: false);
-                provider.logout();
+                  googleSignProv google = googleSignProv();
+                  google.logout();
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
                 );
                 },
               ),
@@ -257,7 +255,6 @@ class _ProfilePageState extends State<ProfilePage> {
             stream: FirebaseFirestore.instance
                 .collection('userPosts')
                 .where('userId', isEqualTo: user.uid) 
-                .orderBy('dataPost', descending: true)
                 .snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
@@ -277,7 +274,7 @@ class _ProfilePageState extends State<ProfilePage> {
             },
           );
         } else {
-          return Center(
+          return const Center(
             child: Text('Posts Favoritos'),
           );
         }

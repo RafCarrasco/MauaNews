@@ -17,17 +17,15 @@ class FeedPage extends StatefulWidget {
 
 class _FeedPageState extends State<FeedPage> {
   File? imageFile;
+  bool isGridSelected = true;
   final user = FirebaseAuth.instance.currentUser!;
 
  void getFieldValue() async {
-  // 1. Obtenha uma referência para o documento
   DocumentReference docRef = FirebaseFirestore.instance.collection('userPosts').doc('R1rNt4foGI4oHENOyU1F');
 
   try {
-    // 2. Obtenha o DocumentSnapshot associado a esse documento
     DocumentSnapshot docSnapshot = await docRef.get();
 
-    // 3. Acesse o campo específico usando data()
     if (docSnapshot.exists) {
        Map<String, dynamic>? data = docSnapshot.data() as Map<String, dynamic>?;
       if(data!=null){
@@ -42,23 +40,41 @@ class _FeedPageState extends State<FeedPage> {
     print('Erro ao obter valor do campo: $e');
   }
 }
-   Widget _buildPosts() {
-    return RefreshIndicator(
-      onRefresh: () async {},
-      child: ListView.builder(
-        itemCount: 10,
-        itemBuilder: (context, index) {
-          // Use o widget de post importado
-          return PostWidget(
-            username: 'Nome do Usuário',
-            imageUrl: Image.network(imageFile.toString()),
-            caption: 'Legenda da postagem',
-            profileImage: '',
-          );
-        },
-      ),
+
+
+
+ Widget _buildPosts() {
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: FirebaseFirestore.instance.collection('userPosts').snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return CircularProgressIndicator();
+        }
+
+        final posts = snapshot.data!.docs;
+
+        return ListView.builder(
+          itemCount: posts.length,
+          itemBuilder: (context, index) {
+            final post = posts[index].data() as Map<String, dynamic>;
+
+            return PostWidget(
+              userId: post['userId'] ?? '',
+              username: post['username'] ?? '',
+              profileImage: post['profileImage'] ?? '',
+              postId: posts[index].id, // Passa o ID do post
+              caption: post['caption'] ?? '',
+            );
+          },
+        );
+      },
     );
   }
+
+
+
+
+
 
   Widget _buildFooter(BuildContext context) {
     return Container(
