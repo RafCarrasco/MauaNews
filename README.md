@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # MauaNews
 Este é um repositório dedicado à apresentação do Projeto Integrador do quarto semestre do Instituto Mauá de Tecnologia. Nosso projeto tem como principal objetivo a criação de uma rede social voltada especificamente para a nossa instituição de ensino.
 
@@ -17,3 +18,6 @@ Este é um repositório dedicado à apresentação do Projeto Integrador do quar
 - [@Raynner Sanchez](https://github.com/Raynnerz)
 
 - [@Rafael Carrasco](https://github.com/RafCarrasco)
+=======
+Este é um projeto dedicado à apresentação do Projeto Integrador do quarto semestre do Instituto Mauá de Tecnologia. Nosso projeto tem como principal objetivo a criação de uma rede social voltada especificamente para a nossa instituição de ensino.
+>>>>>>> buildPosts
