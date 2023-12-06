@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +36,8 @@ class googleSignProv extends ChangeNotifier {
         final us = {
           'email': user.email,
           'username': user.email!.split('@')[0],
-          'bio': 'Biografia vazia...'
+          'bio': 'Biografia vazia...',
+          'url':user.photoURL
         };
         await firestore.collection('usuarios').doc(user.uid).set(us);
       }

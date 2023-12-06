@@ -19,6 +19,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
   File? imageFile;
   XFile? imageFileWeb;
   String? Url;
+  Map<String, dynamic>? userData;
   final picker = ImagePicker();
   final _storage = FirebaseStorage.instance;
   final _firestore = FirebaseFirestore.instance;
@@ -52,6 +53,14 @@ class _CreatePostPageState extends State<CreatePostPage> {
 
   Future<void> uploadImageToFirebase() async {
     if (imageFile != null && user != null) {
+            FirebaseFirestore.instance
+          .collection('usuarios')
+          .doc(user!.uid)
+          .get()
+          .then((snapshot) {
+        if (snapshot.exists) {
+            userData = snapshot.data() as Map<String, dynamic>;
+        }      });
       final userId = user!.uid;
       final Reference storageRef =
           _storage.ref().child('userPosts/$userId/${DateTime.now()}.png');
@@ -68,16 +77,16 @@ class _CreatePostPageState extends State<CreatePostPage> {
       } else {
         print('Operação de upload de arquivo não suportada nesta plataforma.');
       }
-
       final String imageUrl = await storageRef.getDownloadURL();
       final String caption = captionController.text;
       await _firestore.collection('userPosts').add({
         'userId': userId,
         'imageUrl': imageUrl,
         'caption': caption,
-        'likes': 0,
         'comments': [],
         'dataPost': FieldValue.serverTimestamp(),
+        'name':userData!['username'],
+        'picture' : userData!['url'],
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -127,7 +136,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                             Url!,
                             fit: BoxFit.cover,
                           )
-                        : Placeholder(),
+                        : const Placeholder(),
               ),
               if (isCaptionVisible) ...[
                 const SizedBox(height: 20),
@@ -140,7 +149,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: uploadImageToFirebase,
-                  child: Text('Enviar Imagem'),
+                  child: const Text('Enviar Imagem'),
                 ),
               ],
             ] else ...[

@@ -21,7 +21,6 @@ class _SignUpState extends State<SignUp> {
   final passwordController = TextEditingController();
   final confirmpasswordController = TextEditingController();
 
-
   void showErrorMessage(String message) {
     showDialog(
       context: context,
@@ -53,13 +52,16 @@ class _SignUpState extends State<SignUp> {
         final user = FirebaseAuth.instance.currentUser;
         if (user != null) {
           final userDoc =
-              await firestore.collection('usuarios').doc(user.email).get();
+              await firestore.collection('usuarios').doc(user.uid).get();
           if (!userDoc.exists) {
             final us = {
               'email': emailController.text,
-              'senha': passwordController.text
+              'username': emailController.text.split('@')[0],
+              'bio' : 'Biografia vazia...',
+              'url':'assets/images/user_avatar.png'
+
             };
-            await firestore.collection('usuarios').doc(user.email).set(us);
+            await firestore.collection('usuarios').doc(user.uid).set(us);
           }
             Navigator.pop(context);
             Navigator.push(

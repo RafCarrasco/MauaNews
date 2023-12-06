@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class PostWidget extends StatelessWidget {
   final String userId;
-  final String username;
+  final String name;
   final String profileImage;
   final String postId;
   final String caption;
@@ -11,7 +11,7 @@ class PostWidget extends StatelessWidget {
 
   PostWidget({
     required this.userId,
-    required this.username,
+    required this.name,
     required this.profileImage,
     required this.postId,
     required this.caption,
@@ -30,15 +30,19 @@ class PostWidget extends StatelessWidget {
         ),
       ),
       padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildUserProfile(),
-          const SizedBox(height: 10),
-          _buildUserPosts(),
-          const SizedBox(height: 10),
-          _buildFooter(),
-        ],
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 600, maxHeight: 650),
+        width: 500,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildUserProfile(),
+            const SizedBox(height: 10),
+            _buildUserPosts(),
+            const SizedBox(height: 10),
+            _buildFooter(),
+          ],
+        ),
       ),
     );
   }
@@ -60,8 +64,8 @@ class PostWidget extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         Text(
-          username,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          name,
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 253, 253, 253),),
         ),
       ],
     );
@@ -105,20 +109,36 @@ class PostWidget extends StatelessWidget {
   }
 
   Widget _buildFooter() {
-    return Row(
+    return Column(
       children: [
-        IconButton(
-          icon: const Icon(Icons.favorite_border),
-          onPressed: () {
-            // Lógica para lidar com o botão de "like"
-          },
+        Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.favorite_border, color: Colors.white),
+              onPressed: () {
+                // Lógica para lidar com o botão de "like"
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.comment, color: Colors.white),
+              onPressed: () {
+                // Lógica para abrir a aba de comentários
+              },
+            ),
+          ],
         ),
-        const SizedBox(width: 8),
-        IconButton(
-          icon: const Icon(Icons.comment),
-          onPressed: () {
-            // Lógica para abrir a aba de comentários
-          },
+        const SizedBox(height: 1,),
+        Row(
+          children: [
+            Text(
+              "$name " ,
+              style: const TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 253, 253, 253),),
+            ),
+            Text(
+              caption,
+              style: const TextStyle( color: Color.fromARGB(255, 150, 150, 150),),
+            ),
+          ],
         ),
       ],
     );

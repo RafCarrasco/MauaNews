@@ -19,6 +19,7 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
   final user = FirebaseAuth.instance.currentUser!;
   Map<String, dynamic>? userData;
+  Map<String, dynamic>? userData2;
   final picker =ImagePicker();
   Uint8List? _image;
   XFile? photo;
@@ -62,6 +63,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   void _updateUserProfile(String username,String bio) async {
+    print(user.uid);
     try {
       await FirebaseFirestore.instance.collection('usuarios').doc(user.uid).update({
         'username': username,
@@ -72,6 +74,34 @@ class _EditProfilePageState extends State<EditProfilePage> {
         userData?['username'] = username;
         userData?['bio'] = bio;
       });
+    
+
+
+
+
+        QuerySnapshot<Map<String, dynamic>> userPosts = await FirebaseFirestore.instance
+                  .collection('userPosts')
+                  .where('uid', isEqualTo: user.uid)
+                  .get();
+
+              if (userPosts.docs.isNotEmpty) {
+                await FirebaseFirestore.instance
+                    .collection('userPosts')
+                    .doc(userPosts.docs[0].id)
+                    .update({
+                      'name': username,
+                    });
+                } 
+              
+
+                
+
+
+
+
+
+
+
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Perfil atualizado com sucesso!')),
@@ -81,6 +111,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Erro ao atualizar perfil. Tente novamente!')),
       );
+    
     }
   }
 

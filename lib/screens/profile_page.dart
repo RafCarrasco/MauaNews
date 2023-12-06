@@ -65,6 +65,7 @@ class _ProfilePageState extends State<ProfilePage> {
       });
     }
   }
+  
 
   void _openDrawer() {
     showModalBottomSheet(
@@ -107,11 +108,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 onTap: () {
-                  googleSignProv google = googleSignProv();
+                  googleSignProv google=googleSignProv();
                   google.logout();
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                  MaterialPageRoute(builder: (context) => LoginPage()),
                 );
                 },
               ),
@@ -120,7 +121,6 @@ class _ProfilePageState extends State<ProfilePage> {
           );
         });
       }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -151,10 +151,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     Column(
                       children: [
                         const SizedBox(height: 10),
-                        user.photoURL != null ?
+                        userData['url'] != null ?
                         CircleAvatar(
                           radius: 65,
-                          backgroundImage: NetworkImage(user.photoURL ?? ''),
+                          backgroundImage: NetworkImage(userData['url'] ?? ''),
                         )
                         :
                         CircleAvatar(
@@ -274,7 +274,7 @@ class _ProfilePageState extends State<ProfilePage> {
             },
           );
         } else {
-          return const Center(
+          return Center(
             child: Text('Posts Favoritos'),
           );
         }

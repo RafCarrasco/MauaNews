@@ -60,21 +60,18 @@ class _FeedPageState extends State<FeedPage> {
 
             return PostWidget(
               userId: post['userId'] ?? '',
-              username: post['username'] ?? '',
-              profileImage: post['profileImage'] ?? '',
-              postId: posts[index].id, // Passa o ID do post
+              name: post['name'] ?? '',
+              profileImage: post['url'] ?? '',
+              postId: posts[index].id,
               caption: post['caption'] ?? '',
-              imageUrl: post['imageUrl'], 
+              imageUrl: post['imageUrl'],
+
             );
           },
         );
       },
     );
   }
-
-
-
-
 
 
   Widget _buildFooter(BuildContext context) {
