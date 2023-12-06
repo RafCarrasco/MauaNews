@@ -137,7 +137,6 @@ class _FeedPageState extends State<FeedPage> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
               'assets/images/logo.png',
@@ -150,9 +149,7 @@ class _FeedPageState extends State<FeedPage> {
       body: Column(
         children: [
           Expanded(
-            child: Center(
               child: _buildPosts(),
-            ),
           ),
           _buildFooter(context),
         ],

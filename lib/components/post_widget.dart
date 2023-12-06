@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mauanews/screens/users_profile.dart';
 
 class PostWidget extends StatelessWidget {
   final String userId;
@@ -36,18 +37,18 @@ class PostWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildUserProfile(),
+            _buildUserProfile(context),
             const SizedBox(height: 10),
             _buildUserPosts(),
             const SizedBox(height: 10),
-            _buildFooter(),
+            _buildFooter(context),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildUserProfile() {
+  Widget _buildUserProfile(BuildContext context) {
     return Row(
       children: [
         Container(
@@ -63,10 +64,20 @@ class PostWidget extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 10),
-        Text(
+        InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => UserProfilePage(userId: userId, userName: name,),
+              ),
+            );
+          },
+        child: Text(
           name,
-          style: const TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 253, 253, 253),),
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 253, 253, 253), fontSize: 20),
         ),
+        )
       ],
     );
   }
@@ -94,10 +105,8 @@ class PostWidget extends StatelessWidget {
   }
 
   Widget _buildBody(List<DocumentSnapshot> posts) {
-    // Vou usar apenas o primeiro post da lista para este exemplo.
     final post = posts[0];
 
-    // Aqui, você pode acessar os campos específicos usando o método get
     final imageUrl = post.get('imageUrl');
 
     return Image.network(
@@ -108,7 +117,7 @@ class PostWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildFooter() {
+  Widget _buildFooter(BuildContext context) {
     return Column(
       children: [
         Row(
@@ -119,20 +128,25 @@ class PostWidget extends StatelessWidget {
                 // Lógica para lidar com o botão de "like"
               },
             ),
-            IconButton(
-              icon: const Icon(Icons.comment, color: Colors.white),
-              onPressed: () {
-                // Lógica para abrir a aba de comentários
-              },
-            ),
           ],
         ),
         const SizedBox(height: 1,),
         Row(
           children: [
-            Text(
+            InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UserProfilePage(userId: userId, userName : name),
+                  ),
+                );
+              },
+
+            child: Text(
               "$name " ,
               style: const TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 253, 253, 253),),
+            ),
             ),
             Text(
               caption,

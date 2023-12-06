@@ -112,7 +112,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   google.logout();
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
                 );
                 },
               ),
@@ -126,14 +126,16 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
+        iconTheme: const IconThemeData(color: Colors.white),
         title: user.displayName != null ?
-        Text(user.displayName ?? 'Nome do Usuário')
+        Text(user.displayName ?? 'Nome do Usuário', style: const TextStyle(color: Colors.white),)
         :
-        Text(userData?['username'] ?? 'Nome do Usuário'),
+        Text(userData?['username'] ?? 'Nome do Usuário', style: const TextStyle(color: Colors.white),),
         actions: [
           IconButton(
-            icon: const Icon(Icons.menu),
+            icon: const Icon(Icons.menu, color: Colors.white),
+            
             onPressed: _openDrawer,
           ),
         ],
@@ -274,7 +276,7 @@ class _ProfilePageState extends State<ProfilePage> {
             },
           );
         } else {
-          return Center(
+          return const Center(
             child: Text('Posts Favoritos'),
           );
         }

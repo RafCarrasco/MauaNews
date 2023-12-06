@@ -115,8 +115,9 @@ class _CreatePostPageState extends State<CreatePostPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text('Nova publicação'),
+        automaticallyImplyLeading: true,
+        iconTheme: IconThemeData(color: Colors.white),
+        title: const Text('Nova publicação', style: TextStyle(color: Colors.white),),
       ),
       body: Center(
         child: Column(

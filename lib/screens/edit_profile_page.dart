@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:mauanews/components/button_widget.dart';
 import 'package:mauanews/components/edit_textfield.dart';
@@ -18,6 +19,7 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   final user = FirebaseAuth.instance.currentUser!;
+  final _storage = FirebaseStorage.instance;
   Map<String, dynamic>? userData;
   Map<String, dynamic>? userData2;
   final picker =ImagePicker();
@@ -30,37 +32,48 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final TextEditingController _bioController = TextEditingController();
 
   void selectImage() async {
-    final temp = await picker.pickImage(source:ImageSource.gallery);
-    Uint8List img=await temp!.readAsBytes();
-    setState(() {
-      _image = img;
-    });
-  }
+  final user = FirebaseAuth.instance.currentUser!;
+  final temp = await picker.pickImage(source: ImageSource.gallery);
 
-  void _resetPhoto() {
-    setState(() {
-      imageUrl = '';
-      isImageDisplayed = false;
-    });
-  }
+  final userPostsQuery = await FirebaseFirestore.instance
+      .collection('userPosts')
+      .where('userId', isEqualTo: user.uid)
+      .get();
 
-  void _selectPhoto() async {
-    final ImagePicker picker = ImagePicker();
-
-    try {
-      XFile? file =
-          await picker.pickImage(source: ImageSource.gallery, imageQuality: 90);
-      if (file != null) {
-        setState(() {
-          photo?.readAsBytes();
-          photo = file;
-          isImageDisplayed = true;
-        });
-      }
-    } catch (e) {
-      print(e);
+  if (userPostsQuery.docs.isNotEmpty) {
+    for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+        in userPostsQuery.docs) {
+      await doc.reference.update({
+        'url': temp!.path,
+      });
     }
+  } else {
+    await FirebaseFirestore.instance.collection('userPosts').add({
+      'userId': user.uid,
+      'url': temp!.path,
+    });
   }
+
+  final userid = user.uid;
+    final Reference storageRef =
+        _storage.ref().child('userProfile/$userid/${DateTime.now()}.png');
+    if (temp != null) {
+      XFile image = temp;
+      final Uint8List data = await image.readAsBytes();
+      await storageRef.putData(data);
+      String Url = await storageRef.getDownloadURL();
+      FirebaseFirestore.instance.collection('usuarios').doc(user.uid).update({
+        'url': Url,
+      });
+    }
+  Uint8List img = await temp!.readAsBytes();
+  setState(() {
+    _image = img;
+  });
+
+  
+}
+
 
   void _updateUserProfile(String username,String bio) async {
     print(user.uid);
@@ -74,34 +87,24 @@ class _EditProfilePageState extends State<EditProfilePage> {
         userData?['username'] = username;
         userData?['bio'] = bio;
       });
-    
 
+      final userPostsQuery = await FirebaseFirestore.instance
+          .collection('userPosts')
+          .where('userId', isEqualTo: user.uid)
+          .get();
 
-
-
-        QuerySnapshot<Map<String, dynamic>> userPosts = await FirebaseFirestore.instance
-                  .collection('userPosts')
-                  .where('uid', isEqualTo: user.uid)
-                  .get();
-
-              if (userPosts.docs.isNotEmpty) {
-                await FirebaseFirestore.instance
-                    .collection('userPosts')
-                    .doc(userPosts.docs[0].id)
-                    .update({
-                      'name': username,
-                    });
-                } 
-              
-
-                
-
-
-
-
-
-
-
+      if (userPostsQuery.docs.isNotEmpty) {
+        for (QueryDocumentSnapshot<Map<String, dynamic>> doc in userPostsQuery.docs) {
+          await doc.reference.update({
+            'name': username,
+          });
+        }
+      } else {
+        await FirebaseFirestore.instance.collection('userPosts').add({
+          'userId': user.uid,
+          'name': username,
+        });
+      }
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Perfil atualizado com sucesso!')),
@@ -127,8 +130,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: null,
-        title: const Text("Editar o perfil"),
+        automaticallyImplyLeading: true,
+        iconTheme: IconThemeData(color: Colors.white),
+        title: const Text("Editar o perfil",style: TextStyle(color: Colors.white),),
       ),
       body: Column(
         children: [
