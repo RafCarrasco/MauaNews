@@ -9,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mauanews/components/add_image_widget.dart';
 import 'package:mauanews/services/auth_service.dart';
 import 'package:mauanews/utils/colors.dart';
+import 'package:mauanews/screens/feed.dart';
 
 class CreatePostPage extends StatefulWidget {
   @override
@@ -28,6 +29,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
   bool isCaptionVisible = false;
   bool isAndroid = false;
   bool isWeb = false;
+  bool uploading = false;
 
   Future getImageFromCamera() async {
     final pickedFile = await picker.pickImage(source: ImageSource.camera);
@@ -44,7 +46,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
     if (pickedFile != null) {
       Url = pickedFile.path;
       setState(() {
-        imageFileWeb=pickedFile;
+        imageFileWeb = pickedFile;
         imageFile = File(pickedFile.path);
         isCaptionVisible = true;
       });
@@ -53,25 +55,25 @@ class _CreatePostPageState extends State<CreatePostPage> {
 
   Future<void> uploadImageToFirebase() async {
     if (imageFile != null && user != null) {
-            FirebaseFirestore.instance
+      FirebaseFirestore.instance
           .collection('usuarios')
           .doc(user!.uid)
           .get()
           .then((snapshot) {
         if (snapshot.exists) {
-            userData = snapshot.data() as Map<String, dynamic>;
-        }      });
+          userData = snapshot.data() as Map<String, dynamic>;
+        }
+      });
       final userId = user!.uid;
       final Reference storageRef =
           _storage.ref().child('userPosts/$userId/${DateTime.now()}.png');
       if (isAndroid) {
-        // Executar operações específicas de Android/iOS
         await storageRef.putFile(imageFile!);
       } else if (isWeb) {
-                      try{
-        final Uint8List data=await imageFileWeb!.readAsBytes();
-        await storageRef.putData(data);
-        }catch(e){
+        try {
+          final Uint8List data = await imageFileWeb!.readAsBytes();
+          await storageRef.putData(data);
+        } catch (e) {
           print(e);
         }
       } else {
@@ -85,39 +87,41 @@ class _CreatePostPageState extends State<CreatePostPage> {
         'caption': caption,
         'comments': [],
         'dataPost': FieldValue.serverTimestamp(),
-        'name':userData!['username'],
-        'picture' : userData!['url'],
+        'name': userData!['username'],
+        'picture': userData!['url'],
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Imagem enviada com sucesso!'),
-        ),
-      );
 
       setState(() {
+        uploading = false;
         imageFile = null;
         captionController.clear();
         isCaptionVisible = false;
       });
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => FeedPage()),
+      );
     }
-  }    
+  }
 
   @override
-    void initState() {
+  void initState() {
     super.initState();
-    if(kIsWeb){
-      isWeb=true;
-    }else{
-      isAndroid=Android();
+    if (kIsWeb) {
+      isWeb = true;
+    } else {
+      isAndroid = Android();
     }
-    
   }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
-        iconTheme: IconThemeData(color: Colors.white),
-        title: const Text('Nova publicação', style: TextStyle(color: Colors.white),),
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text('Nova publicação', style: TextStyle(color: Colors.white)),
       ),
       body: Center(
         child: Column(
@@ -125,8 +129,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
           children: <Widget>[
             if (imageFile != null) ...[
               Container(
-                width: 100,
-                height: 100,
+                width: 500,
+                height: 500,
                 child: isAndroid
                     ? Image.file(
                         imageFile!,
@@ -141,16 +145,50 @@ class _CreatePostPageState extends State<CreatePostPage> {
               ),
               if (isCaptionVisible) ...[
                 const SizedBox(height: 20),
-                TextField(
-                  controller: captionController,
-                  decoration: const InputDecoration(
-                    hintText: 'Legenda da foto',
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  child: TextField(
+                    controller: captionController,
+                    maxLines: 1,
+                    decoration: InputDecoration(
+                      hintText: 'Legenda da foto',
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    style: const TextStyle(color: Colors.black),
                   ),
                 ),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: uploadImageToFirebase,
-                  child: const Text('Enviar Imagem'),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    setState(() {
+                      uploading = true;
+                    });
+
+                    await uploadImageToFirebase();
+
+                    setState(() {
+                      uploading = false;
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.blue,
+                    onPrimary: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                  ),
+                  icon: Icon(
+                    uploading ? Icons.hourglass_empty : Icons.send,
+                  ),
+                  label: uploading
+                      ? const Text('Enviando...')
+                      : const Text('Enviar Imagem'),
                 ),
               ],
             ] else ...[

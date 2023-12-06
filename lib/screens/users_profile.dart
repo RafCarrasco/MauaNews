@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mauanews/components/custom_icon_button.dart';
 import 'package:mauanews/screens/create_post_page.dart';
 import 'package:mauanews/screens/feed.dart';
+import 'package:mauanews/screens/profile_page.dart';
 import 'package:mauanews/utils/colors.dart';
 
 
@@ -145,13 +146,6 @@ class UserProfilePage extends StatelessWidget {
                 },
               ),
               CustomIconButton(
-                icon: Icons.search,
-                color: primaryColor,
-                iconSize: 32,
-                onPressed: () {
-                }
-              ),
-              CustomIconButton(
                 icon: Icons.add_circle_outline_rounded,
                 color: primaryColor,
                 iconSize: 32,
@@ -164,9 +158,14 @@ class UserProfilePage extends StatelessWidget {
               ),
               CustomIconButton(
                 icon: Icons.account_circle_rounded,
-                color: selectedButtons,
+                color: primaryColor,
                 iconSize: 32,
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ProfilePage()),
+                  );
+                },
               ),
             ],
           )

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mauanews/screens/users_profile.dart';
 
-class PostWidget extends StatelessWidget {
+class PostWidget extends StatefulWidget {
   final String userId;
   final String name;
   final String profileImage;
@@ -19,6 +19,12 @@ class PostWidget extends StatelessWidget {
     required this.imageUrl,
   });
 
+  @override
+  _PostWidgetState createState() => _PostWidgetState();
+}
+
+class _PostWidgetState extends State<PostWidget> {
+  bool isLiked = false;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -59,7 +65,7 @@ class PostWidget extends StatelessWidget {
             shape: BoxShape.circle,
             image: DecorationImage(
               fit: BoxFit.cover,
-              image: NetworkImage(profileImage),
+              image: NetworkImage(widget.profileImage),
             ),
           ),
         ),
@@ -69,14 +75,14 @@ class PostWidget extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => UserProfilePage(userId: userId, userName: name,),
+                builder: (context) => UserProfilePage(userId: widget.userId, userName: widget.name,),
               ),
             );
           },
-        child: Text(
-          name,
-          style: const TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 253, 253, 253), fontSize: 20),
-        ),
+          child: Text(
+            widget.name,
+            style: const TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 253, 253, 253), fontSize: 20),
+          ),
         )
       ],
     );
@@ -86,7 +92,7 @@ class PostWidget extends StatelessWidget {
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: FirebaseFirestore.instance
           .collection('userPosts')
-          .where('imageUrl', isEqualTo: imageUrl)
+          .where('imageUrl', isEqualTo: widget.imageUrl)
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
@@ -123,9 +129,15 @@ class PostWidget extends StatelessWidget {
         Row(
           children: [
             IconButton(
-              icon: const Icon(Icons.favorite_border, color: Colors.white),
+              icon: Icon(
+                isLiked ? Icons.favorite : Icons.favorite_border,
+                color: isLiked ? Colors.red : Colors.white,
+              ),
               onPressed: () {
-                // Lógica para lidar com o botão de "like"
+                _handleLike(widget.postId, !isLiked);
+                setState(() {
+                  isLiked = !isLiked;
+                });
               },
             ),
           ],
@@ -138,23 +150,25 @@ class PostWidget extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => UserProfilePage(userId: userId, userName : name),
+                    builder: (context) => UserProfilePage(userId: widget.userId, userName : widget.name),
                   ),
                 );
               },
-
-            child: Text(
-              "$name " ,
-              style: const TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 253, 253, 253),),
-            ),
+              child: Text(
+                "${widget.name} " ,
+                style: const TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 253, 253, 253),),
+              ),
             ),
             Text(
-              caption,
+              widget.caption,
               style: const TextStyle( color: Color.fromARGB(255, 150, 150, 150),),
             ),
           ],
         ),
       ],
     );
+  }
+
+  void _handleLike(String postId, bool isLiked) {
   }
 }

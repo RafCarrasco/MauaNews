@@ -61,11 +61,10 @@ class _FeedPageState extends State<FeedPage> {
             return PostWidget(
               userId: post['userId'] ?? '',
               name: post['name'] ?? '',
-              profileImage: post['url'] ?? '',
+              profileImage: post['picture'] ?? '',
               postId: posts[index].id,
               caption: post['caption'] ?? '',
               imageUrl: post['imageUrl'],
-
             );
           },
         );
@@ -90,13 +89,6 @@ class _FeedPageState extends State<FeedPage> {
           CustomIconButton(
             icon: Icons.home,
             color: selectedButtons,
-            iconSize: 32,
-            onPressed: () {
-            },
-          ),
-          CustomIconButton(
-            icon: Icons.search,
-            color: primaryColor,
             iconSize: 32,
             onPressed: () {
             },
@@ -135,17 +127,20 @@ class _FeedPageState extends State<FeedPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Row(
-          children: [
-            Image.asset(
-              'assets/images/logo.png',
-              fit: BoxFit.contain,
-              height: 42,
+          automaticallyImplyLeading: false,
+          title: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/images/logo.png',
+                  fit: BoxFit.contain,
+                  height: 42,
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
       body: Column(
         children: [
           Expanded(

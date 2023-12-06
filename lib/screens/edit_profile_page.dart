@@ -35,24 +35,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final user = FirebaseAuth.instance.currentUser!;
   final temp = await picker.pickImage(source: ImageSource.gallery);
 
-  final userPostsQuery = await FirebaseFirestore.instance
-      .collection('userPosts')
-      .where('userId', isEqualTo: user.uid)
-      .get();
-
-  if (userPostsQuery.docs.isNotEmpty) {
-    for (QueryDocumentSnapshot<Map<String, dynamic>> doc
-        in userPostsQuery.docs) {
-      await doc.reference.update({
-        'url': temp!.path,
-      });
-    }
-  } else {
-    await FirebaseFirestore.instance.collection('userPosts').add({
-      'userId': user.uid,
-      'url': temp!.path,
-    });
-  }
 
   final userid = user.uid;
     final Reference storageRef =
@@ -62,6 +44,24 @@ class _EditProfilePageState extends State<EditProfilePage> {
       final Uint8List data = await image.readAsBytes();
       await storageRef.putData(data);
       String Url = await storageRef.getDownloadURL();
+  final userPostsQuery = await FirebaseFirestore.instance
+      .collection('userPosts')
+      .where('userId', isEqualTo: user.uid)
+      .get();
+
+  if (userPostsQuery.docs.isNotEmpty) {
+    for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+        in userPostsQuery.docs) {
+      await doc.reference.update({
+        'url':Url,
+      });
+    }
+  } else {
+    await FirebaseFirestore.instance.collection('userPosts').add({
+      'userId': user.uid,
+      'url': Url,
+    });
+  }
       FirebaseFirestore.instance.collection('usuarios').doc(user.uid).update({
         'url': Url,
       });
@@ -70,10 +70,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   setState(() {
     _image = img;
   });
-
-  
 }
-
 
   void _updateUserProfile(String username,String bio) async {
     print(user.uid);

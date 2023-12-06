@@ -201,7 +201,7 @@ class _ProfilePageState extends State<ProfilePage> {
             _buildUserInfo(),
             const SizedBox(height: 20),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 GestureDetector(
                   onTap: () {
@@ -215,18 +215,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     color: isGridSelected ? primaryColor : Colors.grey,
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      isGridSelected = false;
-                    });
-                  },
-                  child: Icon(
-                    Icons.assignment_ind_outlined,
-                    size: 32,
-                    color: isGridSelected ? Colors.grey : primaryColor,
-                  ),
-                ),
+                
               ],
             ),
             const SizedBox(height: 10),
@@ -314,25 +303,18 @@ class _ProfilePageState extends State<ProfilePage> {
                 color: primaryColor,
                 iconSize: 32,
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pop(
                     context,
                     MaterialPageRoute(builder: (context) => FeedPage()),
                   );
                 },
               ),
               CustomIconButton(
-                icon: Icons.search,
-                color: primaryColor,
-                iconSize: 32,
-                onPressed: () {
-                }
-              ),
-              CustomIconButton(
                 icon: Icons.add_circle_outline_rounded,
                 color: primaryColor,
                 iconSize: 32,
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pop(
                     context,
                     MaterialPageRoute(builder: (context) => CreatePostPage()),
                   );
